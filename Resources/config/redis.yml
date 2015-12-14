@@ -1,0 +1,37 @@
+framework:
+    annotations:
+        cache: oro.cache.annotations
+
+snc_redis:
+    clients:  # configure phpredis clients
+        default:
+            type: predis
+            alias: default
+            dsn: %redis_dsn%/1
+        doctrine:
+            type: predis
+            alias: doctrine
+            dsn: %redis_dsn%/2
+        session:
+            type: predis
+            alias: session
+            dsn: %redis_dsn%/3
+    doctrine: # use Redis caching for Doctrine
+        metadata_cache:
+            client: doctrine
+            entity_manager: default
+            document_manager: default
+        result_cache:
+            client: doctrine
+            entity_manager: [default]
+        query_cache:
+            client: doctrine
+            entity_manager: default
+    session:  # configure sessions
+        client: session
+        prefix: session
+        use_as_default: true
+
+jms_serializer:
+    metadata:
+        cache: Metadata\Cache\DoctrineCacheAdapter

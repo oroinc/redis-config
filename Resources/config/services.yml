@@ -1,0 +1,24 @@
+services:
+    oro.cache.abstract:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setRedis, [@snc_redis.default]]
+
+    oro.file_cache.abstract:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setRedis, [@snc_redis.default]]
+
+    oro.cache.wsse_nonces:
+        public: false
+        parent: oro.cache.abstract
+        calls:
+            - [ setNamespace, [ "oro_nonces_cache" ] ]
+
+    oro.cache.annotations:
+        public: false
+        parent: oro.cache.abstract
+        calls:
+            - [ setNamespace, [ "oro_annotations_cache" ] ]

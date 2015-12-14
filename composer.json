@@ -1,0 +1,29 @@
+{
+  "name": "oro/redis-config",
+  "type": "symfony-bundle",
+  "description": "OroRedisConfigBundle",
+  "homepage": "https://github.com/orocrm/redis-config",
+  "license": "MIT",
+  "keywords": [
+    "Oro",
+    "OroPlatform",
+    "OroCrm",
+    "Redis"
+  ],
+  "require": {
+    "predis/predis": "^1.0",
+    "snc/redis-bundle": "1.1.*",
+    "akeneo/batch-bundle": "0.4.2"
+  },
+  "autoload": {
+    "psr-0": {
+      "Oro\\Bundle\\RedisConfigBundle": "src/"
+    }
+  },
+  "target-dir": "src/Oro/Bundle/RedisConfigBundle",
+  "config": {
+    "bin-dir": "bin"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
