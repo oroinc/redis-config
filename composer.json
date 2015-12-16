@@ -11,7 +11,7 @@
     "Redis"
   ],
   "require": {
-    "predis/predis": "^1.0",
+    "predis/predis": "~1.0",
     "snc/redis-bundle": "1.1.*"
   },
   "autoload": {
