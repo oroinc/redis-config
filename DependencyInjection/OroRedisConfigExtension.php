@@ -25,7 +25,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        if ($container->hasParameter('redis_dsn')) {
+        if ($container->hasParameter('redis_dsn_cache') && $container->hasParameter('redis_dsn_session')) {
             $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
             $loader->load('services.yml');
         }
@@ -34,7 +34,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     /** {@inheritdoc} */
     public function prepend(ContainerBuilder $container)
     {
-        if ($container->hasParameter('redis_dsn')) {
+        if ($container->hasParameter('redis_dsn_cache') && $container->hasParameter('redis_dsn_session')) {
             $configs = Yaml::parse($this->fileLocator->locate('redis.yml'));
         } else {
             $configs = Yaml::parse($this->fileLocator->locate('redis_dummy.yml'));

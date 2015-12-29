@@ -18,7 +18,8 @@ From project root need to run
 ### Configuration
 In parameters.yml need to add redis config section
 ``` yaml
-    redis_dsn: "redis://password@host:port"
+    redis_dsn_cache: "redis://password@host:port/db"
+    redis_dsn_session: "redis://password@host:port/db"
 ```
 
 After this need to remove cache.
