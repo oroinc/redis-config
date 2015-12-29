@@ -7,15 +7,15 @@ snc_redis:
         default:
             type: predis
             alias: default
-            dsn: %redis_dsn%/1
+            dsn: %redis_dsn_cache%
         doctrine:
             type: predis
             alias: doctrine
-            dsn: %redis_dsn%/2
+            dsn: %redis_dsn_cache%
         session:
             type: predis
             alias: session
-            dsn: %redis_dsn%/3
+            dsn: %redis_dsn_session%
     doctrine: # use Redis caching for Doctrine
         metadata_cache:
             client: doctrine
