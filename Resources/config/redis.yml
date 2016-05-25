@@ -1,7 +1,32 @@
 framework:
     annotations:
         cache: oro.cache.annotations
-
+    session:
+        handler_id: snc_redis.session.handler
+doctrine:
+    orm:
+        entity_managers:
+            default:
+                metadata_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.metadata
+                query_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.query
+            config:
+                metadata_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.metadata.config
+                query_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.query.config
+            search:
+                metadata_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.metadata.search
+                query_cache_driver:
+                    type: service
+                    id:   oro.cache.doctrine.query.search
 snc_redis:
     clients:  # configure phpredis clients
         default:
@@ -11,22 +36,11 @@ snc_redis:
         doctrine:
             type: predis
             alias: doctrine
-            dsn: %redis_dsn_cache%
+            dsn: %redis_dsn_doctrine%
         session:
             type: predis
             alias: session
             dsn: %redis_dsn_session%
-    doctrine: # use Redis caching for Doctrine
-        metadata_cache:
-            client: doctrine
-            entity_manager: default
-            document_manager: default
-        result_cache:
-            client: doctrine
-            entity_manager: [default]
-        query_cache:
-            client: doctrine
-            entity_manager: default
     session:  # configure sessions
         client: session
         prefix: session
