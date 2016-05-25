@@ -24,14 +24,6 @@ In parameters.yml need to add redis config section
     redis_dsn_doctrine: 'redis://password@localhost:6379/2'
 ```
 
-In config.yml need to activate session handling
-``` yaml
-framework:
-    ...
-    session:
-        handler_id: snc_redis.session.handler
-```
-
 After this need to remove cache.
 
 For more information check [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)!
