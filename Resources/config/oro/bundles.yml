@@ -1,3 +1,4 @@
 bundles:
-    - { name: Snc\RedisBundle\SncRedisBundle, priority: -300 }
-    - { name: Oro\Bundle\RedisConfigBundle\OroRedisConfigBundle, priority: -290 }
+  - { name: Snc\RedisBundle\SncRedisBundle, priority: -211 }
+  - { name: Oro\Bundle\RedisConfigBundle\OroRedisConfigBundle, priority: -210 }
+

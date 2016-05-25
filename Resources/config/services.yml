@@ -1,24 +1,63 @@
 services:
+    oro.cache.doctrine.metadata:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_metadata' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+    oro.cache.doctrine.query:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_query' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+
+    oro.cache.doctrine.metadata.config:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_metadata_config' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+    oro.cache.doctrine.query.config:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_query_config' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+
+    oro.cache.doctrine.metadata.search:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_metadata_search' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+    oro.cache.doctrine.query.search:
+        public: false
+        class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+        calls:
+            - [setNamespace, [ 'doctrine_query_search' ]]
+            - [setRedis, [@snc_redis.doctrine]]
+
     oro.cache.abstract:
         public: false
         class: Snc\RedisBundle\Doctrine\Cache\RedisCache
         calls:
-            - [setRedis, [@snc_redis.default]]
+            - [ setRedis, [ '@snc_redis.default' ] ]
 
     oro.file_cache.abstract:
         public: false
         class: Snc\RedisBundle\Doctrine\Cache\RedisCache
         calls:
-            - [setRedis, [@snc_redis.default]]
+            - [ setRedis, [ '@snc_redis.default' ] ]
 
     oro.cache.wsse_nonces:
         public: false
         parent: oro.cache.abstract
         calls:
-            - [ setNamespace, [ "oro_nonces_cache" ] ]
+            - [ setNamespace, [ 'oro_nonces_cache' ] ]
 
     oro.cache.annotations:
         public: false
         parent: oro.cache.abstract
         calls:
-            - [ setNamespace, [ "oro_annotations_cache" ] ]
+            - [ setNamespace, [ 'oro_annotations_cache' ] ]
