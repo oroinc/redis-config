@@ -32,15 +32,15 @@ snc_redis:
         default:
             type: predis
             alias: default
-            dsn: %redis_dsn_cache%
+            dsn: "%redis_dsn_cache%"
         doctrine:
             type: predis
             alias: doctrine
-            dsn: %redis_dsn_doctrine%
+            dsn: "%redis_dsn_doctrine%"
         session:
             type: predis
             alias: session
-            dsn: %redis_dsn_session%
+            dsn: "%redis_dsn_session%"
     session:  # configure sessions
         client: session
         prefix: session

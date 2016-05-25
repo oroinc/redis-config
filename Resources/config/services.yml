@@ -42,13 +42,13 @@ services:
         public: false
         class: Snc\RedisBundle\Doctrine\Cache\RedisCache
         calls:
-            - [setRedis, [@snc_redis.default]]
+            - [ setRedis, [ "@snc_redis.default" ] ]
 
     oro.file_cache.abstract:
         public: false
         class: Snc\RedisBundle\Doctrine\Cache\RedisCache
         calls:
-            - [setRedis, [@snc_redis.default]]
+            - [ setRedis, [ "@snc_redis.default" ] ]
 
     oro.cache.wsse_nonces:
         public: false
