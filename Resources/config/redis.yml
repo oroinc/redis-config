@@ -1,8 +1,6 @@
 framework:
     annotations:
         cache: oro.cache.annotations
-    session:
-        handler_id: snc_redis.session.handler
 doctrine:
     orm:
         entity_managers:
