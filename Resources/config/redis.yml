@@ -1,8 +1,6 @@
 framework:
     annotations:
         cache: oro.cache.annotations
-    session:
-        handler_id: snc_redis.session.handler
 doctrine:
     orm:
         entity_managers:
@@ -44,7 +42,7 @@ snc_redis:
     session:  # configure sessions
         client: session
         prefix: session
-        use_as_default: true
+        use_as_default: false
 
 jms_serializer:
     metadata:
