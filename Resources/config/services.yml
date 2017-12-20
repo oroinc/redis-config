@@ -56,8 +56,10 @@ services:
         calls:
             - [ setNamespace, [ 'oro_nonces_cache' ] ]
 
-    oro.cache.annotations:
+    oro_cache.annotations:
+        parent: doctrine_cache.abstract.file_system
         public: false
-        parent: oro.cache.abstract
+        arguments:
+            - '%kernel.cache_dir%/annotations'
         calls:
             - [ setNamespace, [ 'oro_annotations_cache' ] ]
