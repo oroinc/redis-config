@@ -1,0 +1,33 @@
+doctrine:
+  orm:
+    entity_managers:
+      default:
+        metadata_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.metadata
+        query_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.query
+      config:
+        metadata_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.metadata.config
+        query_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.query.config
+      search:
+        metadata_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.metadata.search
+        query_cache_driver:
+          type: service
+          id:   oro.cache.doctrine.query.search
+snc_redis:
+  clients:
+    doctrine:
+      type: predis
+      alias: doctrine
+      dsn: '%redis_dsn_doctrine%'
+jms_serializer:
+  metadata:
+    cache: Metadata\Cache\DoctrineCacheAdapter

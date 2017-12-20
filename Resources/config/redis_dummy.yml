@@ -1,6 +1,0 @@
-snc_redis:
-    clients:  # configure phpredis clients
-        default:
-            type: predis
-            alias: default
-            dsn: redis://localhost/1
