@@ -11,6 +11,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
+    const REDIS_SESSION_HANDLER = 'snc_redis.session.handler';
+    
     /** @var  FileLocator */
     protected $fileLocator;
 
@@ -21,29 +23,104 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
+     * @param ContainerBuilder $container
+     * @param string $paramName
+     * @return bool
+     */
+    private function validateRedisConfigDsnValue(ContainerBuilder $container, $paramName)
+    {
+        if (!$container->hasParameter($paramName)
+            || null === $container->getParameter($paramName)
+            || !preg_match('/^redis\:\/\/.+?\/\d+$/', $container->getParameter($paramName))) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @return bool
+     */
+    protected function isRedisEnabledForSessions(ContainerBuilder $container)
+    {
+        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_session')
+        && self::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @return bool
+     */
+    protected function isRedisEnabledForCache(ContainerBuilder $container)
+    {
+        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_cache')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @return bool
+     */
+    protected function isRedisEnabledForDoctrine(ContainerBuilder $container)
+    {
+        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_doctrine')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @return bool
+     */
+    private function isRedisEnabled(ContainerBuilder $container)
+    {
+        return $this->isRedisEnabledForSessions($container)
+            || $this->isRedisEnabledForCache($container)
+            || $this->isRedisEnabledForDoctrine($container);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        if ($container->hasParameter('redis_dsn_cache')
-            && $container->hasParameter('redis_dsn_session')
-            && $container->hasParameter('redis_dsn_doctrine')) {
-            $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
-            $loader->load('services.yml');
+        $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
+        if ($this->isRedisEnabledForCache($container)) {
+            $loader->load('cache/services.yml');
+        }
+        if ($this->isRedisEnabledForDoctrine($container)) {
+            $loader->load('doctrine/services.yml');
         }
     }
 
     /** {@inheritdoc} */
     public function prepend(ContainerBuilder $container)
     {
-        if ($container->hasParameter('redis_dsn_cache')
-            && $container->hasParameter('redis_dsn_session')
-            && $container->hasParameter('redis_dsn_doctrine')) {
-            $configs = Yaml::parse($this->fileLocator->locate('redis.yml'));
+        $configs = [[]];
+        if ($this->isRedisEnabled($container)) {
+            if ($this->isRedisEnabledForSessions($container)) {
+                $configs[] = Yaml::parse($this->fileLocator->locate('session/config.yml'));
+            }
+            if ($this->isRedisEnabledForCache($container)) {
+                $configs[] = Yaml::parse($this->fileLocator->locate('cache/config.yml'));
+            }
+            if ($this->isRedisEnabledForDoctrine($container)) {
+                $configs[] = Yaml::parse($this->fileLocator->locate('doctrine/config.yml'));
+            }
         } else {
-            $configs = Yaml::parse($this->fileLocator->locate('redis_dummy.yml'));
+            $configs[] = Yaml::parse($this->fileLocator->locate('redis_disabled.yml'));
         }
-        foreach ($configs as $name => $config) {
+        foreach (\array_merge_recursive(...$configs) as $name => $config) {
             $container->prependExtensionConfig($name, $config);
         }
     }
