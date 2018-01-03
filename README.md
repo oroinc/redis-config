@@ -21,6 +21,12 @@ sudo mkdir -p /var/lib/redis-cache /var/log/redis-cache /var/run/redis-cache
 sudo chown redis:redis /var/lib/redis-cache /var/log/redis-cache /var/run/redis-cache
 ```
 
+Create tmpfiles config
+
+```bash
+echo "d /run/redis-cache 2775 redis redis -" | sudo tee /usr/lib/tmpfiles.d/redis-cache-server.conf
+```
+
 Copy original configs for second server
 ```bash
 sudo cp -rp /etc/redis /etc/redis-cache
