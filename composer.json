@@ -12,7 +12,7 @@
   ],
   "require": {
     "predis/predis": "~1.0",
-    "snc/redis-bundle": "1.1.*"
+    "snc/redis-bundle": "~2.0.2"
   },
   "autoload": {
     "psr-0": {
