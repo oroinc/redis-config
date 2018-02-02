@@ -1,48 +1,35 @@
 services:
   oro.cache.doctrine.metadata:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro.cache.doctrine.query:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_query' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro.cache.doctrine.metadata.config:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_config' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro.cache.doctrine.query.config:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_query_config' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro.cache.doctrine.metadata.search:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_search' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro.cache.doctrine.query.search:
-    public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
+    parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_query_search' ]]
-      - [setRedis, [@snc_redis.doctrine]]
 
   oro_batch.cache.doctrine_metadata:
     parent: oro.cache.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_batch' ]]
-      - [setRedis, [@snc_redis.doctrine]]
