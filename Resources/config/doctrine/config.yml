@@ -27,10 +27,6 @@ snc_redis:
     doctrine:
       type: predis
       alias: doctrine
-      dsn:
-        - '%redis_dsn_doctrine%'
-      options:
-        replication: true
 
 jms_serializer:
   metadata:

@@ -6,7 +6,3 @@ snc_redis:
     cache:
       type: predis
       alias: cache
-      dsn:
-        - '%redis_dsn_cache%'
-      options:
-        replication: true

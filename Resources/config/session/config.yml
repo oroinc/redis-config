@@ -3,10 +3,6 @@ snc_redis:
     session:
       type: predis
       alias: session
-      dsn:
-        - '%redis_dsn_session%'
-      options:
-        replication: true
   session:
     client: session
     prefix: session

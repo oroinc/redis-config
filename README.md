@@ -143,15 +143,47 @@ Require package via composer
 composer require oro/redis-config 
 ```
 
-### Configure Application
+### Configuration of Application for usage standalone redis
 Update parameters.yml with next options:
 ``` yaml
 session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  'redis://127.0.0.1:6379/0'
 redis_dsn_cache:    'redis://127.0.0.1:6380/0'
 redis_dsn_doctrine: 'redis://127.0.0.1:6380/1'
-
+redis_setup: 'standalone'
 ```
+
+
+### Configuration of Application for usage cluster redis
+Update parameters.yml with next options:
+````yaml
+session_handler:    'snc_redis.session.handler'
+redis_dsn_session:  ['redis://127.0.0.1:6379/0?alias=master','redis://127.0.0.1:6380/0']
+redis_dsn_cache:    ['redis://127.0.0.1:6381/0?alias=master','redis://127.0.0.1:6382/0']
+redis_dsn_doctrine: ['redis://127.0.0.1:6381/1?alias=master','redis://127.0.0.1:6382/0']
+redis_setup: 'cluster'
+````
+
+
+### Configuration of Application for usage HA redis cluster : sentinel
+Update parameters.yml with next options:
+````yaml
+session_handler:    'snc_redis.session.handler'
+redis_dsn_session:  'tcp://172.28.128.3:26379/0'
+redis_dsn_cache:    'tcp://172.28.128.3:26379/0'
+redis_dsn_doctrine: 'tcp://172.28.128.3:26379/1'
+redis_setup: 'sentinel'
+redis_sentinel_master_name: 'mymaster'
+redis_sentinel_prefer_slave: '172.28.128.128'
+````
+In this case need to provide redis-sentinel endpoint with db number for redis_dsn_session,redis_dsn_cache,redis_dsn_doctrine. 
+In parameter redis_sentinel_master_name need to provide master service name, which configured in sentinel.conf
+```yaml
+sentinel monitor mymaster 172.28.128.3 2
+```
+For usage preferable slave (for example redis slave on application host) need to provide ip of redis slave, which works on application host.
+In this case performance will be maximum available with minimal Network I/O.
+
 
 And clear all filesystem caches
 

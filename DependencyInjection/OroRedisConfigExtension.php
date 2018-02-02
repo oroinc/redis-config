@@ -8,7 +8,12 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Yaml\Yaml;
+use Predis\Command\RawCommand;
 
+/**
+ * Class OroRedisConfigExtension
+ * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
+ */
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
     const REDIS_SESSION_HANDLER = 'snc_redis.session.handler';
@@ -29,9 +34,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      */
     private function validateRedisConfigDsnValue(ContainerBuilder $container, $paramName)
     {
-        if (!$container->hasParameter($paramName)
-            || null === $container->getParameter($paramName)
-            || !preg_match('/^redis\:\/\/.+?\/\d+$/', $container->getParameter($paramName))) {
+        if (!$container->hasParameter($paramName) || (null === $container->getParameter($paramName))) {
             return false;
         }
         
@@ -106,6 +109,8 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     /** {@inheritdoc} */
     public function prepend(ContainerBuilder $container)
     {
+        $isRedisEnabled = true;
+        
         $configs = [[]];
         if ($this->isRedisEnabled($container)) {
             if ($this->isRedisEnabledForSessions($container)) {
@@ -118,9 +123,14 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
                 $configs[] = Yaml::parse($this->fileLocator->locate('doctrine/config.yml'));
             }
         } else {
+            $isRedisEnabled = false;
             $configs[] = Yaml::parse($this->fileLocator->locate('redis_disabled.yml'));
         }
+
         foreach (\array_merge_recursive(...$configs) as $name => $config) {
+            if($isRedisEnabled && ('snc_redis' === $name)){
+                $config['clients'] = SetupFactory::factory($container)->getConfig($config['clients']);
+            }
             $container->prependExtensionConfig($name, $config);
         }
     }
