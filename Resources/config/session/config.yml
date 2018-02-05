@@ -6,4 +6,3 @@ snc_redis:
   session:
     client: session
     prefix: session
-    use_as_default: false
