@@ -1,0 +1,20 @@
+services:
+  oro.redis_config.setup_factory:
+    class: Oro\Bundle\RedisConfigBundle\Service\SetupFactory
+    calls:
+      - ['setContainer', ['@service_container']]
+
+  oro.redis_config.setup.sentinel:
+    class: Oro\Bundle\RedisConfigBundle\Service\Setup\SentinelSetup
+    calls:
+      - ['setContainer', ['@service_container']]
+
+  oro.redis_config.setup.cluster:
+    class: Oro\Bundle\RedisConfigBundle\Service\Setup\ClusterSetup
+    calls:
+      - ['setContainer', ['@service_container']]
+
+  oro.redis_config.setup.standalone:
+    class: Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup
+    calls:
+      - ['setContainer', ['@service_container']]

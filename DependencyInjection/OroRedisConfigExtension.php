@@ -3,6 +3,7 @@
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection;
 
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\Setup\StandaloneSetup;
+use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -114,6 +115,9 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         
         $configs = [[]];
         if ($this->isRedisEnabled($container)) {
+            $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
+            $loader->load('services.yml');
+            
             if(!$container->hasParameter('redis_setup') ||
                (null == $container->getParameter('redis_setup'))){
                 $container->setParameter('redis_setup', StandaloneSetup::TYPE);
@@ -135,7 +139,10 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
 
         foreach (\array_merge_recursive(...$configs) as $name => $config) {
             if($isRedisEnabled && ('snc_redis' === $name)){
-                $config['clients'] = SetupFactory::factory($container)->getConfig($config['clients']);
+                $setupType = $container->getParameter('redis_setup');
+                /** @var SetupFactory $setupFactory */
+                $setupFactory = $container->get('oro.redis_config.setup_factory');
+                $config['clients'] = $setupFactory->factory($setupType)->getConfig($config['clients']);
             }
             $container->prependExtensionConfig($name, $config);
         }
