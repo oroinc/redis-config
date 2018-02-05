@@ -1,35 +1,41 @@
 services:
+  oro.doctrine.abstract:
+    public: false
+    class: Doctrine\Common\Cache\PredisCache
+    arguments:
+      - '@snc_redis.doctrine'
+
   oro.cache.doctrine.metadata:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata' ]]
 
   oro.cache.doctrine.query:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_query' ]]
 
   oro.cache.doctrine.metadata.config:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_config' ]]
 
   oro.cache.doctrine.query.config:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_query_config' ]]
 
   oro.cache.doctrine.metadata.search:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_search' ]]
 
   oro.cache.doctrine.query.search:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_query_search' ]]
 
   oro_batch.cache.doctrine_metadata:
-    parent: oro.cache.abstract
+    parent: oro.doctrine.abstract
     calls:
       - [setNamespace, [ 'doctrine_metadata_batch' ]]
