@@ -11,6 +11,9 @@ use Predis\Command\RawCommand;
  */
 class SentinelSetup implements SetupInterface
 {
+    /** setup type */
+    const TYPE = 'sentinel';
+    
     const PARAMETER_REDIS_SENTINEL_MASTER_NAME = 'redis_sentinel_master_name';
     
     /** @var ContainerInterface  */
@@ -33,8 +36,10 @@ class SentinelSetup implements SetupInterface
      */
     public function getConfig(array $config)
     {
+        $this->container->setParameter('redis_setup', self::TYPE);
+        
         $this->validate();
-    
+        
         $redisSentinelPreferSlave = $this->container->getParameter('redis_sentinel_prefer_slave');
         $redisSentinelMasterName  = $this->container->getParameter('redis_sentinel_master_name');
         

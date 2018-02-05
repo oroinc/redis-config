@@ -10,6 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class StandaloneSetup implements SetupInterface
 {
+    /** setup type */
+    const TYPE = 'standalone';
+    
     /** @var ContainerInterface  */
     private $container;
     
@@ -30,6 +33,8 @@ class StandaloneSetup implements SetupInterface
      */
     public function getConfig(array $config)
     {
+        $this->container->setParameter('redis_setup', self::TYPE);
+        
         foreach ($config as $k => $v) {
             $dsnParameterValue = $this->container->getParameter(sprintf('redis_dsn_%s', $k));
             $config[$k]['dsn'] = (string)$dsnParameterValue;

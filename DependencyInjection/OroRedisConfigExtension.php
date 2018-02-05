@@ -2,6 +2,7 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection;
 
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\Setup\StandaloneSetup;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -113,6 +114,11 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         
         $configs = [[]];
         if ($this->isRedisEnabled($container)) {
+            if(!$container->hasParameter('redis_setup') ||
+               (null == $container->getParameter('redis_setup'))){
+                $container->setParameter('redis_setup', StandaloneSetup::TYPE);
+            }
+            
             if ($this->isRedisEnabledForSessions($container)) {
                 $configs[] = Yaml::parse($this->fileLocator->locate('session/config.yml'));
             }

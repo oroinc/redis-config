@@ -13,10 +13,6 @@ use Oro\Bundle\RedisConfigBundle\DependencyInjection\Setup\StandaloneSetup;
  */
 final class SetupFactory
 {
-    const SETUP_SENTINEL   = 'sentinel';
-    const SETUP_CLUSTER    = 'cluster';
-    const SETUP_STANDALONE = 'standalone';
-    
     /**
      * @param ContainerInterface $container
      *
@@ -27,19 +23,18 @@ final class SetupFactory
         $setup = $container->getParameter('redis_setup');
         
         switch ($setup){
-            case self::SETUP_SENTINEL:
+            case SentinelSetup::TYPE:
                 return new SentinelSetup($container);
                 break;
-            case self::SETUP_CLUSTER:
+            case ClusterSetup::TYPE:
                 return new ClusterSetup($container);
                 break;
-            case self::SETUP_STANDALONE:
+            case StandaloneSetup::TYPE:
                 return new StandaloneSetup($container);
                 break;
             default:
-                $availableSetups = [self::SETUP_SENTINEL,self::SETUP_CLUSTER, self::SETUP_STANDALONE];
+                $availableSetups = [SentinelSetup::TYPE, ClusterSetup::TYPE, StandaloneSetup::TYPE];
                 $validSetups = implode(', ', $availableSetups);
-                $msg = 'Unknown redis setup: %s. Valid redis setups: %s';
                 throw new \InvalidArgumentException(
                     sprintf('Unknown setup : %s. Valid setups: %s', $setup,$validSetups)
                 );
