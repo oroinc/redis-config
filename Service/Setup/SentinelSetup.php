@@ -4,8 +4,6 @@ namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use Predis\Command\RawCommand;
-
 /**
  * Class SentinelSetup
  * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
@@ -14,9 +12,9 @@ class SentinelSetup extends AbstractSetup
 {
     /** setup type */
     const TYPE = 'sentinel';
-    
+
     const PARAMETER_REDIS_SENTINEL_MASTER_NAME = 'redis_sentinel_master_name';
-    
+
     /**
      * @param array $config
      *
@@ -25,69 +23,62 @@ class SentinelSetup extends AbstractSetup
     public function getConfig(array $config)
     {
         $this->container->setParameter('redis_setup', self::TYPE);
-        
-        $this->validate();
-        
-        $redisSentinelPreferSlave = $this->container->getParameter('redis_sentinel_prefer_slave');
+        $this->validate($config);
         $redisSentinelMasterName  = $this->container->getParameter('redis_sentinel_master_name');
-        
+
         foreach ($config as $k => $v) {
-            $dsnParameterValue      = $this->container->getParameter(sprintf('redis_dsn_%s', $k));
-            $dsn                    = [];
-            $dsnParameterValueParts = explode('/', $dsnParameterValue);
-            $sentinelEndpoint       = sprintf('%s//%s', $dsnParameterValueParts[0], $dsnParameterValueParts[2]);
-    
-            $client                   = new \Predis\Client($sentinelEndpoint);
-            $masterPayload            = $client->executeCommand(
-                RawCommand::create(
-                    'SENTINEL',
-                    'get-master-addr-by-name',
-                    $redisSentinelMasterName
-                )
-            );
-            $dsn[] = 'redis://' . $masterPayload[0] . ':' . $masterPayload[1] . '/' . $dsnParameterValueParts[3] . '?alias=master';
-            $slavesPayload = $client->executeCommand(
-                RawCommand::create('SENTINEL', 'slaves', $redisSentinelMasterName)
-            );
-            
-            $dsnSlaves = [];
-            foreach ($slavesPayload as $cnt => $item) {
-                $dsnSlave = 'redis://' . $item[1] . '/' . $dsnParameterValueParts[3];
-                if ( ! empty($redisSentinelPreferSlave) && ($redisSentinelPreferSlave == $item[3])) {
-                    array_unshift($dsnSlaves, $dsnSlave);
+            $dsnParameterValues = $this->container->getParameter(sprintf('redis_dsn_%s', $k));
+            $dsns = [];
+            $password = '';
+            foreach ($dsnParameterValues as $dsnParameterValue) {
+                $dsnParameterValueParts = explode('/', $dsnParameterValue);
+                $database = array_pop($dsnParameterValueParts);
+                $dsn = implode('/', $dsnParameterValueParts);
+                if (strpos($dsn, '@')) {
+                    $dsns[] = preg_replace('/(redis:\/\/)(.*\@)(.*)/', '$1$3', $dsn);
+                    $password = preg_replace('/(redis:\/\/)(.*)(\@.*)/', '$2', $dsn);
                 } else {
-                    array_push($dsnSlaves, $dsnSlave);
+                    $dsns[] = $dsn;
                 }
             }
-    
-            $dsn  = array_merge($dsn, $dsnSlaves);
-            
-            $config[$k]['dsn'] = $dsn;
-            $config[$k]['options']['replication'] = true;
+
+            $config[$k]['dsn'] = $dsns;
+            $config[$k]['options']['replication'] = self::TYPE;
+            $config[$k]['options']['service'] = $redisSentinelMasterName;
+            $config[$k]['options']['parameters']['database'] = $database;
+            if ($password) {
+                $config[$k]['options']['parameters']['password'] = $password;
+            }
         }
-        
+
         return $config;
     }
-    
+
     /**
-     * validation
+     * @param array $config
+     * @throws \InvalidArgumentException
      */
-    protected function validate()
+    protected function validate($config)
     {
-        if(!$this->container->hasParameter(self::PARAMETER_REDIS_SENTINEL_MASTER_NAME)){
-            throw new \RuntimeException(
-                sprintf('Missing parameter %s', self::PARAMETER_REDIS_SENTINEL_MASTER_NAME)
-            );
-        }
         $redisSentinelMasterName = $this->container->getParameter(self::PARAMETER_REDIS_SENTINEL_MASTER_NAME);
         if((null == $redisSentinelMasterName) || empty($redisSentinelMasterName) ){
             throw new \InvalidArgumentException(
                 sprintf(
-                    'Parameter %s has invalid  value. It should contain valid master-name like mymaster',
-                    self::PARAMETER_REDIS_SENTINEL_MASTER_NAME,
-                    $redisSentinelMasterName
+                    'Parameter %s has been missed',
+                    self::PARAMETER_REDIS_SENTINEL_MASTER_NAME
                 )
             );
+        }
+        foreach (array_keys($config) as $configKey) {
+            $dsnParameters = $this->container->getParameter(sprintf('redis_dsn_%s', $configKey));
+            if (!is_array($dsnParameters) || count($dsnParameters) < 2) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Parameter %s has invalid value. It must contain at least 2 sentinel server addresses',
+                        'redis_dsn_' . $configKey
+                    )
+                );
+            }
         }
     }
 }

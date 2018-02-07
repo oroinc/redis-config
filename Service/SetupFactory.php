@@ -45,7 +45,7 @@ class SetupFactory
                 $availableSetups = [SentinelSetup::TYPE, ClusterSetup::TYPE, StandaloneSetup::TYPE];
                 $validSetups = implode(', ', $availableSetups);
                 throw new \InvalidArgumentException(
-                    sprintf('Unknown setup : %s. Valid setups: %s', $setup,$validSetups)
+                    sprintf('Unknown setup : %s. Valid setups: %s', $setupType, $validSetups)
                 );
                 break;
         }

@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class StandaloneSetup
- * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
+ * @package Oro\Bundle\RedisConfigBundle\Service\Setup
  */
 class StandaloneSetup extends AbstractSetup
 {
@@ -14,9 +14,8 @@ class StandaloneSetup extends AbstractSetup
     const TYPE = 'standalone';
     
     /**
-     * @param null $config
-     *
-     * @return null
+     * @param array $config
+     * @return array
      */
     public function getConfig(array $config)
     {

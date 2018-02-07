@@ -143,7 +143,7 @@ Require package via composer
 composer require oro/redis-config 
 ```
 
-### Configuration of Application for usage standalone redis
+### Configuration of Application for standalone redis setup
 Update parameters.yml with next options:
 ``` yaml
 session_handler:    'snc_redis.session.handler'
@@ -154,7 +154,7 @@ redis_setup: 'standalone'
 ```
 
 
-### Configuration of Application for usage cluster redis
+### Configuration of Application for redis cluster setup
 Update parameters.yml with next options:
 ````yaml
 session_handler:    'snc_redis.session.handler'
@@ -165,26 +165,29 @@ redis_setup: 'cluster'
 ````
 
 
-### Configuration of Application for usage HA redis cluster : sentinel
+### Configuration of Application for usage sentinel redis setup
 Update parameters.yml with next options:
 ````yaml
 session_handler:    'snc_redis.session.handler'
-redis_dsn_session:  'tcp://172.28.128.3:26379/0'
-redis_dsn_cache:    'tcp://172.28.128.3:26379/0'
-redis_dsn_doctrine: 'tcp://172.28.128.3:26379/1'
+redis_dsn_session:  ['redis://127.0.0.1:26379/0','redis://127.0.0.1:26379/0']
+redis_dsn_cache:    ['redis://127.0.0.1:26379/1','redis://127.0.0.1:26379/1']
+redis_dsn_doctrine: ['redis://127.0.0.1:26379/2','redis://127.0.0.1:26379/2']
 redis_setup: 'sentinel'
 redis_sentinel_master_name: 'mymaster'
-redis_sentinel_prefer_slave: '172.28.128.128'
+redis_sentinel_prefer_slave: '127.0.0.1'
 ````
-In this case need to provide redis-sentinel endpoint with db number for redis_dsn_session,redis_dsn_cache,redis_dsn_doctrine. 
-In parameter redis_sentinel_master_name need to provide master service name, which configured in sentinel.conf
+In this case it is required to provide redis-sentinel endpoints with db numbers for redis_dsn_session,redis_dsn_cache,redis_dsn_doctrine. 
+In parameter redis_sentinel_master_name master service name, which configured in sentinel.conf, needs to be provided
 ```yaml
-sentinel monitor mymaster 172.28.128.3 2
+sentinel monitor mymaster 127.0.0.1 2
 ```
-For usage preferable slave (for example redis slave on application host) need to provide ip of redis slave, which works on application host.
-In this case performance will be maximum available with minimal Network I/O.
+Parameter redis_sentinel_prefer_slave is responsible for selection preferable slave node via IP address in case if cluster has 
+a few slaves and it needs to connect to specific one
+Also, please pay attention, you have to set up at least 2 sentinel endpoints, otherwise intergation will not work.
 
+### Related links
 
-And clear all filesystem caches
-
-For more information check [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)!
+- [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)
+- [PedisBundle Documentation](https://github.com/nrk/predis)
+- [Redis Sentinel Documentation](https://redis.io/topics/sentinel)
+- [Redis cluster tutorial](https://redis.io/topics/cluster-tutorial)

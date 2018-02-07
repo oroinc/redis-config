@@ -4,7 +4,7 @@ namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
 /**
  * Interface SetupInterface
- * @package Oro\Bundle\RedisConfigBundle\DependencyInjection\Setup
+ * @package Oro\Bundle\RedisConfigBundle\Service\Setup
  */
 interface SetupInterface
 {

@@ -8,7 +8,6 @@ services:
   oro.file_cache.abstract:
     public: false
     class: Doctrine\Common\Cache\PredisCache
-    class: Doctrine\Common\Cache\PredisCache
     arguments:
       - '@snc_redis.cache'
 

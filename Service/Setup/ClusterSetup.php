@@ -4,7 +4,7 @@ namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
 /**
  * Class ClusterSetup
- * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
+ * @package Oro\Bundle\RedisConfigBundle\Service\Setup
  */
 class ClusterSetup extends AbstractSetup
 {

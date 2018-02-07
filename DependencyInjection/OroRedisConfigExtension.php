@@ -2,7 +2,7 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection;
 
-use Oro\Bundle\RedisConfigBundle\DependencyInjection\Setup\StandaloneSetup;
+use Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup;
 use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,7 +19,7 @@ use Predis\Command\RawCommand;
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
     const REDIS_SESSION_HANDLER = 'snc_redis.session.handler';
-    
+
     /** @var  FileLocator */
     protected $fileLocator;
 
@@ -39,7 +39,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         if (!$container->hasParameter($paramName) || (null === $container->getParameter($paramName))) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -50,10 +50,10 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     protected function isRedisEnabledForSessions(ContainerBuilder $container)
     {
         if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_session')
-        && self::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')) {
+            && self::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -112,17 +112,17 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     public function prepend(ContainerBuilder $container)
     {
         $isRedisEnabled = true;
-        
         $configs = [[]];
         if ($this->isRedisEnabled($container)) {
             $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
             $loader->load('services.yml');
-            
+            $configs[] = Yaml::parse($this->fileLocator->locate('redis_enabled.yml'));
+
             if(!$container->hasParameter('redis_setup') ||
-               (null == $container->getParameter('redis_setup'))){
+                (null == $container->getParameter('redis_setup'))){
                 $container->setParameter('redis_setup', StandaloneSetup::TYPE);
             }
-            
+
             if ($this->isRedisEnabledForSessions($container)) {
                 $configs[] = Yaml::parse($this->fileLocator->locate('session/config.yml'));
             }

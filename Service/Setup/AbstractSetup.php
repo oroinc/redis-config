@@ -7,17 +7,24 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class AbstractSetup
- * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
+ * @package Oro\Bundle\RedisConfigBundle\Service\Setup
  */
-Abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
+abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
 {
     /** @var ContainerInterface */
     protected $container;
-    
+
+    /**
+     * @param ContainerInterface|null $container
+     */
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
-    
+
+    /**
+     * @param array $config
+     * @return mixed
+     */
     abstract public function getConfig(array $config);
 }
