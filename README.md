@@ -143,19 +143,19 @@ Require package via composer
 composer require oro/redis-config 
 ```
 
-### Configuration of Application for standalone redis setup
-Update parameters.yml with next options:
+### Configuration for standalone redis setup
+Update parameters.yml with the following:
 ``` yaml
 session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  'redis://127.0.0.1:6379/0'
 redis_dsn_cache:    'redis://127.0.0.1:6380/0'
 redis_dsn_doctrine: 'redis://127.0.0.1:6380/1'
-redis_setup: 'standalone'
+redis_setup: 'standalone' #optional, current configuration is applied if it's not set
 ```
 
 
-### Configuration of Application for redis cluster setup
-Update parameters.yml with next options:
+### Configuration for redis cluster setup
+Update parameters.yml with the following:
 ````yaml
 session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  ['redis://127.0.0.1:6379/0?alias=master','redis://127.0.0.1:6380/0']
@@ -165,8 +165,8 @@ redis_setup: 'cluster'
 ````
 
 
-### Configuration of Application for usage sentinel redis setup
-Update parameters.yml with next options:
+### Configuration for sentinel redis setup
+Update parameters.yml with the following:
 ````yaml
 session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  ['redis://127.0.0.1:26379/0','redis://127.0.0.1:26379/0']
