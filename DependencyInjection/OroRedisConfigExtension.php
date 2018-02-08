@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Yaml\Yaml;
-use Predis\Command\RawCommand;
 
 /**
  * Class OroRedisConfigExtension
@@ -87,7 +86,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      * @param ContainerBuilder $container
      * @return bool
      */
-    private function isRedisEnabled(ContainerBuilder $container)
+    public function isRedisEnabled(ContainerBuilder $container)
     {
         return $this->isRedisEnabledForSessions($container)
             || $this->isRedisEnabledForCache($container)
@@ -95,7 +94,8 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $configs
+     * @param ContainerBuilder $container
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -108,7 +108,10 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    /** {@inheritdoc} */
+    /**
+     * @param ContainerBuilder $container
+     * @throws \Exception
+     */
     public function prepend(ContainerBuilder $container)
     {
         $isRedisEnabled = true;
@@ -116,7 +119,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         if ($this->isRedisEnabled($container)) {
             $loader = new Loader\YamlFileLoader($container, $this->fileLocator);
             $loader->load('services.yml');
-            $configs[] = Yaml::parse($this->fileLocator->locate('redis_enabled.yml'));
+            $configs[] = $this->parseYmlConfig($this->fileLocator->locate('redis_enabled.yml'));
 
             if(!$container->hasParameter('redis_setup') ||
                 (null == $container->getParameter('redis_setup'))){
@@ -124,17 +127,17 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             }
 
             if ($this->isRedisEnabledForSessions($container)) {
-                $configs[] = Yaml::parse($this->fileLocator->locate('session/config.yml'));
+                $configs[] = $this->parseYmlConfig($this->fileLocator->locate('session/config.yml'));
             }
             if ($this->isRedisEnabledForCache($container)) {
-                $configs[] = Yaml::parse($this->fileLocator->locate('cache/config.yml'));
+                $configs[] = $this->parseYmlConfig($this->fileLocator->locate('cache/config.yml'));
             }
             if ($this->isRedisEnabledForDoctrine($container)) {
-                $configs[] = Yaml::parse($this->fileLocator->locate('doctrine/config.yml'));
+                $configs[] = $this->parseYmlConfig($this->fileLocator->locate('doctrine/config.yml'));
             }
         } else {
             $isRedisEnabled = false;
-            $configs[] = Yaml::parse($this->fileLocator->locate('redis_disabled.yml'));
+            $configs[] = $this->parseYmlConfig($this->fileLocator->locate('redis_disabled.yml'));
         }
 
         foreach (\array_merge_recursive(...$configs) as $name => $config) {
@@ -146,5 +149,14 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             }
             $container->prependExtensionConfig($name, $config);
         }
+    }
+
+    /**
+     * @param string $filePath
+     * @return mixed
+     */
+    public function parseYmlConfig($filePath)
+    {
+        return Yaml::parse($filePath);
     }
 }

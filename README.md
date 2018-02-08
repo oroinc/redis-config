@@ -181,9 +181,9 @@ In parameter redis_sentinel_master_name master service name, which configured in
 ```yaml
 sentinel monitor mymaster 127.0.0.1 2
 ```
-Parameter redis_sentinel_prefer_slave is responsible for selection preferable slave node via IP address in case if cluster has 
-a few slaves and it needs to connect to specific one
-Also, please pay attention, you have to set up at least 2 sentinel endpoints, otherwise intergation will not work.
+Parameter redis_*sentinel_prefer_slave* is responsible for selection preferable slave node via IP address in case if cluster has 
+a few slaves and it needs to connect to specific one. 
+Also, please pay attention, you have to set up at least 2 sentinel endpoints, otherwise integration will not work.
 
 ### Related links
 
