@@ -1,6 +1,6 @@
 <?php
 
-namespace Oro\Bundle\EntitySerializedFieldsBundle\Tests\Unit\DependencyInjection\Compiler;
+namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection\Compiler;
 
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\ConfigCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

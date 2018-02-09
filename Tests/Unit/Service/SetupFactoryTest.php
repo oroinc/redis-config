@@ -1,6 +1,6 @@
 <?php
 
-namespace Oro\Bundle\EntitySerializedFieldsBundle\Tests\Unit\Service;
+namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service;
 
 use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Oro\Bundle\RedisConfigBundle\Service\Setup;

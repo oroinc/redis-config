@@ -1,6 +1,6 @@
 <?php
 
-namespace Oro\Bundle\EntitySerializedFieldsBundle\Tests\Unit\Service\Setup;
+namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service\Setup;
 
 use Oro\Bundle\RedisConfigBundle\Service\Setup;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

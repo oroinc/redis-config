@@ -1,5 +1,6 @@
 <?php
-namespace Oro\Bundle\EntitySerializedFieldsBundle\Tests\Unit\DependencyInjection;
+
+namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection;
 
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\OroRedisConfigExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -111,7 +112,6 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
             new Reference('snc_redis.cache'),
             $definition->getArgument(0)
         );
-
     }
 
     public function testDoctrineServicesDefinition()
