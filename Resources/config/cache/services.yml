@@ -1,15 +1,15 @@
 services:
   oro.cache.abstract:
     public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
-    calls:
-        - [ setRedis, [ '@snc_redis.cache' ] ]
+    class: Doctrine\Common\Cache\PredisCache
+    arguments:
+      - '@snc_redis.cache'
 
   oro.file_cache.abstract:
     public: false
-    class: Snc\RedisBundle\Doctrine\Cache\RedisCache
-    calls:
-        - [ setRedis, [ '@snc_redis.cache' ] ]
+    class: Doctrine\Common\Cache\PredisCache
+    arguments:
+      - '@snc_redis.cache'
 
   oro.cache.wsse_nonces:
     public: false

@@ -143,16 +143,51 @@ Require package via composer
 composer require oro/redis-config 
 ```
 
-### Configure Application
-Update parameters.yml with next options:
+### Configuration for standalone redis setup
+Update parameters.yml with the following:
 ``` yaml
 session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  'redis://127.0.0.1:6379/0'
 redis_dsn_cache:    'redis://127.0.0.1:6380/0'
 redis_dsn_doctrine: 'redis://127.0.0.1:6380/1'
-
+redis_setup: 'standalone' #optional, current configuration is applied if it's not set
 ```
 
-And clear all filesystem caches
 
-For more information check [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)!
+### Configuration for redis cluster setup
+Update parameters.yml with the following:
+````yaml
+session_handler:    'snc_redis.session.handler'
+redis_dsn_session:  ['redis://127.0.0.1:6379/0?alias=master','redis://127.0.0.1:6380/0']
+redis_dsn_cache:    ['redis://127.0.0.1:6381/0?alias=master','redis://127.0.0.1:6382/0']
+redis_dsn_doctrine: ['redis://127.0.0.1:6381/1?alias=master','redis://127.0.0.1:6382/0']
+redis_setup: 'cluster'
+````
+
+
+### Configuration for sentinel redis setup
+Update parameters.yml with the following:
+````yaml
+session_handler:    'snc_redis.session.handler'
+redis_dsn_session:  ['redis://127.0.0.1:26379/0','redis://127.0.0.1:26379/0']
+redis_dsn_cache:    ['redis://127.0.0.1:26379/1','redis://127.0.0.1:26379/1']
+redis_dsn_doctrine: ['redis://127.0.0.1:26379/2','redis://127.0.0.1:26379/2']
+redis_setup: 'sentinel'
+redis_sentinel_master_name: 'mymaster'
+redis_sentinel_prefer_slave: '127.0.0.1'
+````
+In this case it is required to provide redis-sentinel endpoints with db numbers for redis_dsn_session,redis_dsn_cache,redis_dsn_doctrine. 
+In parameter redis_sentinel_master_name master service name, which configured in sentinel.conf, needs to be provided
+```yaml
+sentinel monitor mymaster 127.0.0.1 2
+```
+Parameter redis_*sentinel_prefer_slave* is responsible for selection preferable slave node via IP address in case if cluster has 
+a few slaves and it needs to connect to specific one. 
+Also, please pay attention, you have to set up at least 2 sentinel endpoints, otherwise integration will not work.
+
+### Related links
+
+- [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)
+- [PedisBundle Documentation](https://github.com/nrk/predis)
+- [Redis Sentinel Documentation](https://redis.io/topics/sentinel)
+- [Redis cluster tutorial](https://redis.io/topics/cluster-tutorial)

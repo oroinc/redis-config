@@ -12,11 +12,14 @@
   ],
   "require": {
     "predis/predis": "~1.0",
-    "snc/redis-bundle": "1.1.*"
+    "snc/redis-bundle": "~2.0.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.7.*"
   },
   "autoload": {
     "psr-0": {
-      "Oro\\Bundle\\RedisConfigBundle": "src/"
+      "Oro\\Bundle\\RedisConfigBundle": "./"
     }
   },
   "target-dir": "src/Oro/Bundle/RedisConfigBundle",
