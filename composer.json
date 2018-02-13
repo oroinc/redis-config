@@ -22,7 +22,7 @@
       "Oro\\Bundle\\RedisConfigBundle": "./"
     }
   },
-  "target-dir": "src/Oro/Bundle/RedisConfigBundle",
+  "target-dir": "Oro/Bundle/RedisConfigBundle",
   "config": {
     "bin-dir": "bin"
   },
