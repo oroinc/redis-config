@@ -31,7 +31,7 @@ class SetupFactory
      */
     public function factory($setupType)
     {
-        switch ($setupType){
+        switch ($setupType) {
             case SentinelSetup::TYPE:
                 return $this->container->get('oro.redis_config.setup.sentinel');
                 break;

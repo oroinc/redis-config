@@ -35,8 +35,7 @@ class ReplicationOption extends OriginalReplicationOption
             };
         }
 
-        if (
-            !is_object($value) &&
+        if (!is_object($value) &&
             null !== $asbool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
         ) {
             return $asbool ? $this->getDefault($options) : null;

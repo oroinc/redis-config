@@ -2,8 +2,6 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * Class SentinelSetup
  * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
@@ -61,7 +59,7 @@ class SentinelSetup extends AbstractSetup
     protected function validate($config)
     {
         $redisSentinelMasterName = $this->container->getParameter(self::PARAMETER_REDIS_SENTINEL_MASTER_NAME);
-        if((null == $redisSentinelMasterName) || empty($redisSentinelMasterName) ){
+        if ((null == $redisSentinelMasterName) || empty($redisSentinelMasterName)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Parameter %s has been missed',

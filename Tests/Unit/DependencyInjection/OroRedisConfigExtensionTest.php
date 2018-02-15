@@ -58,7 +58,6 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         foreach ($params as $param => $value) {
             $this->container->setParameter($param, $value);
-
         }
         $this->assertEquals($isEnabled, $this->extension->isRedisEnabled($this->container));
     }

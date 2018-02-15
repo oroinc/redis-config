@@ -5,7 +5,7 @@ namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class ConfigCompilerPass  implements CompilerPassInterface
+class ConfigCompilerPass implements CompilerPassInterface
 {
     /**
      * @param ContainerBuilder $container

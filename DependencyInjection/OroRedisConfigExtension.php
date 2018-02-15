@@ -121,8 +121,8 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             $loader->load('services.yml');
             $configs[] = $this->parseYmlConfig($this->fileLocator->locate('redis_enabled.yml'));
 
-            if(!$container->hasParameter('redis_setup') ||
-                (null == $container->getParameter('redis_setup'))){
+            if (!$container->hasParameter('redis_setup') ||
+                (null == $container->getParameter('redis_setup'))) {
                 $container->setParameter('redis_setup', StandaloneSetup::TYPE);
             }
 
@@ -141,7 +141,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         }
 
         foreach (\array_merge_recursive(...$configs) as $name => $config) {
-            if($isRedisEnabled && ('snc_redis' === $name)){
+            if ($isRedisEnabled && ('snc_redis' === $name)) {
                 $setupType = $container->getParameter('redis_setup');
                 /** @var SetupFactory $setupFactory */
                 $setupFactory = $container->get('oro.redis_config.setup_factory');
