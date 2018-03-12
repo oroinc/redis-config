@@ -2,7 +2,7 @@
   "name": "oro/redis-config",
   "type": "symfony-bundle",
   "description": "OroRedisConfigBundle",
-  "homepage": "https://github.com/orocrm/redis-config",
+  "homepage": "https://github.com/oroinc/redis-config",
   "license": "MIT",
   "keywords": [
     "Oro",
@@ -27,5 +27,10 @@
     "bin-dir": "bin"
   },
   "minimum-stability": "dev",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.x-dev"
+    }
+  }
 }

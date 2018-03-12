@@ -2,10 +2,10 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Oro\Bundle\RedisConfigBundle\Service\Setup\SentinelSetup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup\ClusterSetup;
+use Oro\Bundle\RedisConfigBundle\Service\Setup\SentinelSetup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SetupFactory

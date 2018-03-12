@@ -8,7 +8,6 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class ConfigCompilerPassTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testProcess()
     {
         $argumentValue = '~';
