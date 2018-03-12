@@ -157,6 +157,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      */
     public function parseYmlConfig($filePath)
     {
-        return Yaml::parse($filePath);
+        return Yaml::parse(file_get_contents($filePath));
     }
 }
