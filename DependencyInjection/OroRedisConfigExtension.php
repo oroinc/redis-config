@@ -12,7 +12,8 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class OroRedisConfigExtension
+ * Class OroRedisConfigExtension checks that redis is enabled and load service configurations
+ *
  * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
  */
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
