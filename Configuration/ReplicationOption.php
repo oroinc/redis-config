@@ -2,11 +2,11 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Configuration;
 
+use Oro\Bundle\RedisConfigBundle\Connection\Aggregate\SentinelReplication;
+use Predis\Configuration\OptionsInterface;
+use Predis\Configuration\ReplicationOption as OriginalReplicationOption;
 use Predis\Connection\Aggregate\MasterSlaveReplication;
 use Predis\Connection\Aggregate\ReplicationInterface;
-use Predis\Configuration\ReplicationOption as OriginalReplicationOption;
-use Predis\Configuration\OptionsInterface;
-use Oro\Bundle\RedisConfigBundle\Connection\Aggregate\SentinelReplication;
 
 class ReplicationOption extends OriginalReplicationOption
 {

@@ -2,8 +2,8 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service;
 
-use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Oro\Bundle\RedisConfigBundle\Service\Setup;
+use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
