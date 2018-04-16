@@ -1,6 +1,8 @@
 # OroRedisConfigBundle
 
-Configuration enhancements for the application, based on the OroPlatform that will enable usage of the Redis for caching
+OroRedisConfigBundle provides configuration enhancements for Oro applications to enable usage of [Redis](https://redis.io/) for caching.
+
+The bundle enables developers to set Redis parameters in the application configuration YAML files and after that automatically enables and configures Redis caching services for different types of application caches (Doctrine cache, file cache, wsse_nonces cache, etc.) based on these parameters.
 
 ## Configure Redis Servers
 
