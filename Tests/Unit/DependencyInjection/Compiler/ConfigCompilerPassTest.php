@@ -6,7 +6,7 @@ use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\ConfigCompilerPass
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-class ConfigCompilerPassTest extends \PHPUnit_Framework_TestCase
+class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     public function testProcess()
     {

@@ -5,7 +5,7 @@ namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service\Setup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class SentinelSetupTest extends \PHPUnit_Framework_TestCase
+class SentinelSetupTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ContainerBuilder

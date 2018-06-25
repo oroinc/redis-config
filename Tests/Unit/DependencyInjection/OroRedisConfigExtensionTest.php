@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Yaml\Parser;
 
-class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
+class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var OroRedisConfigExtension
@@ -148,7 +148,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
     private function getExtensionMock()
     {
