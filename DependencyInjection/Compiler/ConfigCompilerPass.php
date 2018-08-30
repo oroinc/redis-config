@@ -2,9 +2,9 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
+use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 
 /**
  * Configure services for redis usage.
