@@ -3,6 +3,7 @@
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
 use Oro\Bundle\RedisConfigBundle\Configuration\Options;
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -11,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class ConfigCompilerPass implements CompilerPassInterface
 {
+    use RedisEnabledCheckTrait;
+
     const URL_CACHE_TYPE = 'oro_redirect.url_cache_type';
     const URL_CACHE_STORAGE = 'storage';
     const URL_CACHE_KEY_VALUE = 'key_value';
@@ -43,7 +46,8 @@ class ConfigCompilerPass implements CompilerPassInterface
      */
     protected function configSlugCache(ContainerBuilder $container)
     {
-        if ($container->hasParameter(self::URL_CACHE_TYPE)
+        if ($this->isRedisEnabledForCache($container)
+            && $container->hasParameter(self::URL_CACHE_TYPE)
             && $container->getParameter(self::URL_CACHE_TYPE) === self::URL_CACHE_STORAGE
         ) {
             $container->setParameter(self::URL_CACHE_TYPE, self::URL_CACHE_KEY_VALUE);
