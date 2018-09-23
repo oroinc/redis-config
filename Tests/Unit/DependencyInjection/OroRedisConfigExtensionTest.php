@@ -106,7 +106,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
         $this->testLoad();
         $definition = $this->container->getDefinition('oro.cache.abstract');
         $this->assertEquals('Doctrine\Common\Cache\PredisCache', $definition->getClass());
-        $this->assertFalse($definition->isPublic());
+        $this->assertTrue($definition->isAbstract());
         $this->assertEquals(
             new Reference('snc_redis.cache'),
             $definition->getArgument(0)
@@ -118,7 +118,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
         $this->testLoad();
         $definition = $this->container->getDefinition('oro.doctrine.abstract');
         $this->assertEquals('Doctrine\Common\Cache\PredisCache', $definition->getClass());
-        $this->assertFalse($definition->isPublic());
+        $this->assertTrue($definition->isAbstract());
         $this->assertEquals(
             new Reference('snc_redis.doctrine'),
             $definition->getArgument(0)

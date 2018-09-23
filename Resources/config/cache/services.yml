@@ -1,12 +1,12 @@
 services:
   oro.cache.abstract:
-    public: false
+    abstract: true
     class: Doctrine\Common\Cache\PredisCache
     arguments:
       - '@snc_redis.cache'
 
   oro.file_cache.abstract:
-    public: false
+    abstract: true
     class: Doctrine\Common\Cache\PredisCache
     arguments:
       - '@snc_redis.cache'
