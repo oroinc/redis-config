@@ -2,8 +2,6 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * Class StandaloneSetup
  * @package Oro\Bundle\RedisConfigBundle\Service\Setup
