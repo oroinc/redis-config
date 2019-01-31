@@ -17,6 +17,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
+    use RedisEnabledCheckTrait;
+
     const REDIS_SESSION_HANDLER = 'snc_redis.session.handler';
 
     /** @var  FileLocator */
@@ -26,71 +28,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     public function __construct()
     {
         $this->fileLocator = new FileLocator(__DIR__ . '/../Resources/config');
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @param string $paramName
-     * @return bool
-     */
-    private function validateRedisConfigDsnValue(ContainerBuilder $container, $paramName)
-    {
-        if (!$container->hasParameter($paramName) || (null === $container->getParameter($paramName))) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @return bool
-     */
-    protected function isRedisEnabledForSessions(ContainerBuilder $container)
-    {
-        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_session')
-            && self::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @return bool
-     */
-    protected function isRedisEnabledForCache(ContainerBuilder $container)
-    {
-        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_cache')) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @return bool
-     */
-    protected function isRedisEnabledForDoctrine(ContainerBuilder $container)
-    {
-        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_doctrine')) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @return bool
-     */
-    public function isRedisEnabled(ContainerBuilder $container)
-    {
-        return $this->isRedisEnabledForSessions($container)
-            || $this->isRedisEnabledForCache($container)
-            || $this->isRedisEnabledForDoctrine($container);
     }
 
     /**
