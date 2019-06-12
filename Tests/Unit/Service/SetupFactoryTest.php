@@ -2,35 +2,48 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service;
 
-use Oro\Bundle\RedisConfigBundle\Service\Setup;
+use Oro\Bundle\RedisConfigBundle\Service\Setup\ClusterSetup;
+use Oro\Bundle\RedisConfigBundle\Service\Setup\SentinelSetup;
+use Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup;
 use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class SetupFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    protected $container;
+    /** @var SetupFactory */
+    private $factory;
 
     protected function setUp()
     {
-        $this->container = new ContainerBuilder();
+        $sentinelSetup = $this->createMock(SentinelSetup::class);
+        $clusterSetup = $this->createMock(ClusterSetup::class);
+        $standaloneSetup = $this->createMock(StandaloneSetup::class);
+
+        $this->factory = new SetupFactory($sentinelSetup, $clusterSetup, $standaloneSetup);
     }
 
     /**
      * @dataProvider loadCacheParameterDataProvider
-     * @param string $setup
+     * @param string $setupType
+     * @param $expected
      */
-    public function testFactory($setup)
+    public function testFactory($setupType, $expected)
     {
-        $factory = new SetupFactory();
-        $factory->setContainer($this->container);
-        $message = sprintf('You have requested a non-existent service "oro.redis_config.setup.%s"', $setup);
-        $this->expectException(ServiceNotFoundException::class);
+        $actualSetup = $this->factory->factory($setupType);
+
+        $this->assertInstanceOf($expected, $actualSetup);
+    }
+
+    public function testFactoryException()
+    {
+        $setupType = 'test_type';
+        $availableSetups = [SentinelSetup::TYPE, ClusterSetup::TYPE, StandaloneSetup::TYPE];
+        $validSetups = implode(', ', $availableSetups);
+
+        $message = sprintf('Unknown setup : %s. Valid setups: %s', $setupType, $validSetups);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage($message);
-        $factory->factory($setup);
+
+        $this->factory->factory($setupType);
     }
 
     /**
@@ -40,13 +53,16 @@ class SetupFactoryTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                Setup\StandaloneSetup::TYPE,
+                SentinelSetup::TYPE,
+                SentinelSetup::class,
             ],
             [
-                Setup\ClusterSetup::TYPE,
+                ClusterSetup::TYPE,
+                ClusterSetup::class,
             ],
             [
-                Setup\SentinelSetup::TYPE,
+                StandaloneSetup::TYPE,
+                StandaloneSetup::class,
             ],
         ];
     }

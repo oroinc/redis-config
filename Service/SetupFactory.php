@@ -5,25 +5,36 @@ namespace Oro\Bundle\RedisConfigBundle\Service;
 use Oro\Bundle\RedisConfigBundle\Service\Setup\ClusterSetup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup\SentinelSetup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SetupFactory
- * @package Oro\Bundle\RedisConfigBundle\Service
+ * Provide functionality to change setup type
  */
 class SetupFactory
 {
-    /** @var ContainerInterface */
-    protected $container;
-    
+    /** @var SentinelSetup */
+    private $sentinelSetup;
+
+    /** @var ClusterSetup */
+    private $clusterSetup;
+
+    /** @var StandaloneSetup */
+    private $standaloneSetup;
+
     /**
-     * @param ContainerInterface $container
+     * @param SentinelSetup $sentinelSetup
+     * @param ClusterSetup $clusterSetup
+     * @param StandaloneSetup $standaloneSetup
      */
-    public function setContainer(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        SentinelSetup $sentinelSetup,
+        ClusterSetup $clusterSetup,
+        StandaloneSetup $standaloneSetup
+    ) {
+        $this->sentinelSetup = $sentinelSetup;
+        $this->clusterSetup = $clusterSetup;
+        $this->standaloneSetup = $standaloneSetup;
     }
-    
+
     /**
      * @param $setupType
      *
@@ -33,13 +44,13 @@ class SetupFactory
     {
         switch ($setupType) {
             case SentinelSetup::TYPE:
-                return $this->container->get('oro.redis_config.setup.sentinel');
+                return $this->sentinelSetup;
                 break;
             case ClusterSetup::TYPE:
-                return $this->container->get('oro.redis_config.setup.cluster');
+                return $this->clusterSetup;
                 break;
             case StandaloneSetup::TYPE:
-                return $this->container->get('oro.redis_config.setup.standalone');
+                return $this->standaloneSetup;
                 break;
             default:
                 $availableSetups = [SentinelSetup::TYPE, ClusterSetup::TYPE, StandaloneSetup::TYPE];
