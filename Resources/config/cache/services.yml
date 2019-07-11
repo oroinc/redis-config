@@ -16,9 +16,3 @@ services:
     parent: oro.cache.abstract
     calls:
       - [ setNamespace, [ 'oro_nonces_cache' ] ]
-
-  oro.cache.annotations:
-    public: false
-    parent: oro.cache.abstract
-    calls:
-      - [ setNamespace, [ 'oro_annotations_cache' ] ]

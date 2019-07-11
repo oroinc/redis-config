@@ -3,7 +3,3 @@ snc_redis:
     doctrine:
       type: predis
       alias: doctrine
-
-jms_serializer:
-  metadata:
-    cache: Metadata\Cache\DoctrineCacheAdapter
