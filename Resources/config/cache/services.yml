@@ -11,8 +11,23 @@ services:
     arguments:
       - '@snc_redis.cache'
 
-  oro.cache.wsse_nonces:
+  oro_wsse_authentication.nonce_cache:
+    abstract: true
+    class: Symfony\Component\Cache\Simple\RedisCache
+    arguments:
+      - '@snc_redis.cache'
+      - '<namespace>' # set in WsseNonceCachePass
+      - '<lifetime>' # set in WsseNonceCachePass
+
+  oro_embedded_form.csrf_token_cache:
+    class: Symfony\Component\Cache\Simple\RedisCache
+    arguments:
+      - '@snc_redis.cache'
+      - 'oro_embedded_form'
+      - '%oro_embedded_form.csrf_token_lifetime%'
+
+  oro.cache.annotations:
     public: false
     parent: oro.cache.abstract
     calls:
-      - [ setNamespace, [ 'oro_nonces_cache' ] ]
+      - [ setNamespace, [ 'oro_annotations_cache' ] ]
