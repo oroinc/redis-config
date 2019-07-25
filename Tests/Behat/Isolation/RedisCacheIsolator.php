@@ -22,23 +22,20 @@ class RedisCacheIsolator implements IsolatorInterface
     private $manipulators = [];
 
     /**
+     * @param ContainerInterface $container
      * @param array $knownClients
      */
-    public function __construct(array $knownClients)
+    public function __construct(ContainerInterface $container, array $knownClients)
     {
         $this->knownClients = $knownClients;
+
+        $this->buildManipulators($container);
     }
 
     /** {@inheritdoc} */
     public function isApplicable(ContainerInterface $container)
     {
-        if (\getenv(self::REDIS_ENABLED_ENV_VAR) !== 'REDIS') {
-            return false;
-        }
-
-        $this->buildManipulators($container);
-
-        return (bool) $this->manipulators;
+        return \getenv(self::REDIS_ENABLED_ENV_VAR) === 'REDIS';
     }
 
     /** {@inheritdoc} */

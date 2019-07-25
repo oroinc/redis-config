@@ -2,6 +2,7 @@ services:
     oro_behat_extension.isolation.redis_cache_isolator:
         class: 'Oro\Bundle\RedisConfigBundle\Tests\Behat\Isolation\RedisCacheIsolator'
         arguments:
+            - "@=service('symfony2_extension.kernel').getContainer()"
             -
                 'snc_redis.cache': 'Cache'
                 'snc_redis.doctrine': 'Doctrine cache'
