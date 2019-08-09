@@ -3,30 +3,25 @@
 namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
 /**
- * Class ClusterSetup
- * @package Oro\Bundle\RedisConfigBundle\Service\Setup
+ * {@inheritdoc}
  */
 class ClusterSetup extends AbstractSetup
 {
     /** setup type */
     const TYPE = 'cluster';
-    
+
     /**
-     * @param array $config
+     * @param array  $config
+     * @param string $redisType
      *
      * @return array
      */
-    public function getConfig(array $config)
+    public function getConfig(array $config, string $redisType)
     {
-        $this->container->setParameter('redis_setup', self::TYPE);
-        
-        foreach ($config as $k => $v) {
-            $dsnParameterValue = $this->container->getParameter(sprintf('redis_dsn_%s', $k));
-            $config[$k]['dsn'] = (array)$dsnParameterValue;
-            
-            $config[$k]['options']['replication'] = true;
-        }
-        
+        $dsnParameterValue = $this->container->getParameter(sprintf('redis_dsn_%s', $redisType));
+        $config[$redisType]['dsn'] = (array) $dsnParameterValue;
+        $config[$redisType]['options']['replication'] = true;
+
         return $config;
     }
 }

@@ -21,8 +21,8 @@ class SetupFactory
     private $standaloneSetup;
 
     /**
-     * @param SentinelSetup $sentinelSetup
-     * @param ClusterSetup $clusterSetup
+     * @param SentinelSetup   $sentinelSetup
+     * @param ClusterSetup    $clusterSetup
      * @param StandaloneSetup $standaloneSetup
      */
     public function __construct(
@@ -36,11 +36,11 @@ class SetupFactory
     }
 
     /**
-     * @param $setupType
+     * @param string $setupType
      *
      * @return ClusterSetup|SentinelSetup|StandaloneSetup
      */
-    public function factory($setupType)
+    public function factory(string $setupType)
     {
         switch ($setupType) {
             case SentinelSetup::TYPE:

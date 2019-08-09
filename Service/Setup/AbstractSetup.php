@@ -6,8 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class AbstractSetup
- * @package Oro\Bundle\RedisConfigBundle\Service\Setup
+ * {@inheritdoc}
  */
 abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
 {
@@ -23,8 +22,10 @@ abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
     }
 
     /**
-     * @param array $config
-     * @return mixed
+     * @param array  $config
+     * @param string $redisType
+     *
+     * @return array
      */
-    abstract public function getConfig(array $config);
+    abstract public function getConfig(array $config, string $redisType);
 }

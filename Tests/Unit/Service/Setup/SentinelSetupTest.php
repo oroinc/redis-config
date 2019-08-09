@@ -32,15 +32,15 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
             $dsnConfigSet[$key] = $val . '/' . $dbIndex;
         });
         $this->container->setParameter('redis_dsn_' . $configAlias, $dsnConfigSet);
-        $this->container->setParameter('redis_sentinel_master_name', $sentinelService);
+        $this->container->setParameter('redis_' . $configAlias . '_sentinel_master_name', $sentinelService);
         $redisSetup = new Setup\SentinelSetup();
         $redisSetup->setContainer($this->container);
         $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input);
-        $this->assertEquals($dsnConfig, $output[$configAlias]['dsn']);
-        $this->assertEquals(Setup\SentinelSetup::TYPE, $output[$configAlias]['options']['replication']);
-        $this->assertEquals($sentinelService, $output[$configAlias]['options']['service']);
-        $this->assertEquals($dbIndex, $output[$configAlias]['options']['parameters']['database']);
+        $output = $redisSetup->getConfig($input, $configAlias);
+        $this->assertEquals($dsnConfig, $output['dsn']);
+        $this->assertEquals(Setup\SentinelSetup::TYPE, $output['options']['replication']);
+        $this->assertEquals($sentinelService, $output['options']['service']);
+        $this->assertEquals($dbIndex, $output['options']['parameters']['database']);
     }
 
     /**
@@ -51,21 +51,21 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 'session',
-                ['type' => 'predis', 'alias' => 'session'],
+                ['type' => 'predis', 'alias' => 'session', 'options' => ['connection_persistent' => true]],
                 ['redis://127.0.0.1:26379', 'redis://127.0.0.2:26379'],
                 0,
                 'mymaster'
             ],
             [
                 'cache',
-                ['type' => 'predis', 'alias' => 'cache',],
+                ['type' => 'predis', 'alias' => 'cache', 'options' => ['connection_persistent' => true]],
                 ['redis://127.0.0.1:26379', 'redis://127.0.0.2:26379'],
                 1,
                 'mymaster'
             ],
             [
                 'doctrine',
-                ['type' => 'predis', 'alias' => 'doctrine',],
+                ['type' => 'predis', 'alias' => 'doctrine'],
                 ['redis://127.0.0.1:26379', 'redis://127.0.0.2:26379'],
                 2,
                 'mymaster'
@@ -77,15 +77,15 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
      * @dataProvider incorrectConfigDataProvider
      * @param $dsn
      */
-    public function testIncorrectConfig($dsn)
+    public function testIncorrectConfig($configAlias, $dsn)
     {
         $input = ['cache' => ['dsn' => $dsn]];
         $this->container->setParameter('redis_dsn_cache', $dsn);
-        $this->container->setParameter('redis_sentinel_master_name', 'mymaster');
+        $this->container->setParameter('redis_cache_sentinel_master_name', 'mymaster');
         $redisSetup = new Setup\SentinelSetup();
         $redisSetup->setContainer($this->container);
         $this->expectException(\InvalidArgumentException::class);
-        $redisSetup->getConfig($input);
+        $redisSetup->getConfig($input, $configAlias);
     }
 
     /**
@@ -94,7 +94,14 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
     public function incorrectConfigDataProvider()
     {
         return [
-            ['redis://127.0.0.1:6379/0'], [['redis://127.0.0.1:6379/0']]
+            [
+                'cache',
+                'redis://127.0.0.1:6379/0'
+            ],
+            [
+                'cache',
+                'redis://127.0.0.1:6379/0'
+            ]
         ];
     }
 }

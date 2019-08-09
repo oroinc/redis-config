@@ -16,16 +16,19 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
      */
     public function testProcess(Definition $extension)
     {
-        $argumentValue = '~';
+        $argumentValue = '127.0.0.1';
         $container = new ContainerBuilder();
 
         $extension->setClass(Options::class);
 
+
         $container->setDefinition('oro.redis_config.configuration_option', $extension);
-        $container->setParameter('redis_sentinel_prefer_slave', $argumentValue);
+        $container->setParameter('redis_cache_sentinel_prefer_slave', $argumentValue);
+        $container->setParameter('redis_dsn_cache', 'redis://127.0.0.1:6379/0');
 
         $configCompilerPass = new ConfigCompilerPass();
         $configCompilerPass->process($container);
+
 
         $this->assertEquals(
             $argumentValue,

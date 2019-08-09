@@ -29,7 +29,7 @@ class ClusterSetupTest extends \PHPUnit\Framework\TestCase
         $redisSetup = new Setup\ClusterSetup();
         $redisSetup->setContainer($this->container);
         $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input);
+        $output = $redisSetup->getConfig($input, $configAlias);
         $this->assertEquals($dsnConfig, $output[$configAlias]['dsn']);
         $this->assertTrue($output[$configAlias]['options']['replication']);
     }
@@ -42,12 +42,12 @@ class ClusterSetupTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 'session',
-                ['type' => 'predis', 'alias' => 'session'],
+                ['type' => 'predis', 'alias' => 'session', 'options' => ['connection_persistent' => true]],
                 ['redis://127.0.0.1:6379/0?alias=master', 'redis://127.0.0.1:6380/0']
             ],
             [
                 'cache',
-                ['type' => 'predis', 'alias' => 'cache',],
+                ['type' => 'predis', 'alias' => 'cache', 'options' => ['connection_persistent' => true]],
                 ['redis://127.0.0.1:6379/1?alias=master', 'redis://127.0.0.1:6380/1']
             ],
             [

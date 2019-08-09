@@ -2,14 +2,18 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Configuration;
 
+/**
+ * {@inheritdoc}
+ */
 class Options extends \Predis\Configuration\Options
 {
-    /** @var string  */
+    /** @var string */
     protected $preferSlave;
 
     /**
      * Options constructor.
-     * @param array $options
+     *
+     * @param array  $options
      * @param string $preferSlave
      */
     public function __construct(array $options = [], $preferSlave = '127.0.0.1')
@@ -27,6 +31,7 @@ class Options extends \Predis\Configuration\Options
     {
         $handlers = parent::getHandlers();
         $handlers['replication'] = 'Oro\Bundle\RedisConfigBundle\Configuration\ReplicationOption';
+
         return $handlers;
     }
 

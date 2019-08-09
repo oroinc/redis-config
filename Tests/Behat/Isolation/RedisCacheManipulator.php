@@ -50,6 +50,10 @@ class RedisCacheManipulator
     public function saveRedisState(): int
     {
         $keys = $this->redisClient->keys('*');
+        if (empty($keys)) {
+            return 0;
+        }
+
         $values = $this->redisClient->mget($keys);
 
         $this->data = \array_combine($keys, $values);
@@ -76,7 +80,6 @@ class RedisCacheManipulator
 
         $this->redisClient->flushdb();
         $this->redisClient->mset($this->data);
-
         $this->filesystem->remove($this->fileName);
 
         return count($this->data);
