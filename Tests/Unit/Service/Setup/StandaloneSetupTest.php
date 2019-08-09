@@ -29,8 +29,10 @@ class StandaloneSetupTest extends \PHPUnit\Framework\TestCase
         $redisSetup = new Setup\StandaloneSetup();
         $redisSetup->setContainer($this->container);
         $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input);
-        $this->assertEquals($dsnConfig, $output[$configAlias]['dsn']);
+        $output = $redisSetup
+            ->setRedisClient($configAlias)
+            ->getConfig($input);
+        $this->assertEquals($dsnConfig, $output['dsn']);
     }
 
     /**
@@ -41,17 +43,17 @@ class StandaloneSetupTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 'session',
-                ['type' => 'predis', 'alias' => 'session'],
+                ['type' => 'predis', 'alias' => 'session', 'options' => ['connection_persistent' => true]],
                 'redis://127.0.0.1:6379/0'
             ],
             [
                 'cache',
-                ['type' => 'predis', 'alias' => 'cache',],
+                ['type' => 'predis', 'alias' => 'cache', 'options' => ['connection_persistent' => true]],
                 'redis://127.0.0.1:6379/1'
             ],
             [
                 'doctrine',
-                ['type' => 'predis', 'alias' => 'doctrine',],
+                ['type' => 'predis', 'alias' => 'doctrine'],
                 'redis://127.0.0.1:6379/2'
             ],
         ];

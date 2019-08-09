@@ -5,16 +5,15 @@ namespace Oro\Bundle\RedisConfigBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * This trait contains methods to validate and check that redis is eenabled
- * and configured as a cache
- *
+ * This trait contains methods to validate and check that redis is enabled and configured as a cache
  * It works with ContainerBuilder and can be used in compiler passes
  */
 trait RedisEnabledCheckTrait
 {
     /**
      * @param ContainerBuilder $container
-     * @param string $paramName
+     * @param string           $paramName
+     *
      * @return bool
      */
     private function validateRedisConfigDsnValue(ContainerBuilder $container, $paramName)
@@ -28,12 +27,14 @@ trait RedisEnabledCheckTrait
 
     /**
      * @param ContainerBuilder $container
+     *
      * @return bool
      */
     protected function isRedisEnabledForSessions(ContainerBuilder $container)
     {
         if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_session')
-            && self::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')) {
+            && OroRedisConfigExtension::REDIS_SESSION_HANDLER == $container->getParameter('session_handler')
+        ) {
             return true;
         }
 
@@ -42,6 +43,7 @@ trait RedisEnabledCheckTrait
 
     /**
      * @param ContainerBuilder $container
+     *
      * @return bool
      */
     protected function isRedisEnabledForCache(ContainerBuilder $container)
@@ -55,6 +57,7 @@ trait RedisEnabledCheckTrait
 
     /**
      * @param ContainerBuilder $container
+     *
      * @return bool
      */
     protected function isRedisEnabledForDoctrine(ContainerBuilder $container)
@@ -68,6 +71,7 @@ trait RedisEnabledCheckTrait
 
     /**
      * @param ContainerBuilder $container
+     *
      * @return bool
      */
     public function isRedisEnabled(ContainerBuilder $container)

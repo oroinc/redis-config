@@ -8,14 +8,13 @@ use Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SetupFactory
- * @package Oro\Bundle\RedisConfigBundle\Service
+ * Factory for create different redis setups, depends on redis type(cache,doctrine,session)
  */
 class SetupFactory
 {
     /** @var ContainerInterface */
     protected $container;
-    
+
     /**
      * @param ContainerInterface $container
      */
@@ -23,14 +22,19 @@ class SetupFactory
     {
         $this->container = $container;
     }
-    
+
     /**
-     * @param $setupType
+     * @param $redisType
      *
      * @return ClusterSetup|SentinelSetup|StandaloneSetup
      */
-    public function factory($setupType)
+    public function factory($redisType)
     {
+        $param = sprintf('redis_dsn_%s_type', $redisType);
+        $setupType = $this->container->hasParameter($param) ?
+            $this->container->getParameter($param) :
+            StandaloneSetup::TYPE;
+
         switch ($setupType) {
             case SentinelSetup::TYPE:
                 return $this->container->get('oro.redis_config.setup.sentinel');
