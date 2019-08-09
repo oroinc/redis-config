@@ -1,6 +1,8 @@
 # OroRedisConfigBundle
 
-Configuration enhancements for the application, based on the OroPlatform that will enable usage of the Redis for caching
+OroRedisConfigBundle provides configuration enhancements for Oro applications to enable usage of [Redis](https://redis.io/) for caching.
+
+The bundle enables developers to set Redis parameters in the application configuration YAML files and after that automatically enables and configures Redis caching services for different types of application caches (Doctrine cache, file cache, wsse_nonces cache, etc.) based on these parameters.
 
 ## Configure Redis Servers
 
@@ -150,7 +152,9 @@ session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  'redis://127.0.0.1:6379/0'
 redis_dsn_cache:    'redis://127.0.0.1:6380/0'
 redis_dsn_doctrine: 'redis://127.0.0.1:6380/1'
-redis_setup: 'standalone' #optional, current configuration is applied if it's not set
+redis_dsn_session_type: 'standalone' #optional, current configuration is applied if it's not set
+redis_dsn_cache_type: 'standalone' #optional, current configuration is applied if it's not set
+redis_dsn_doctrine_type: 'standalone' #optional, current configuration is applied if it's not set
 ```
 
 
@@ -161,7 +165,11 @@ session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  ['redis://127.0.0.1:6379/0?alias=master','redis://127.0.0.1:6380/0']
 redis_dsn_cache:    ['redis://127.0.0.1:6381/0?alias=master','redis://127.0.0.1:6382/0']
 redis_dsn_doctrine: ['redis://127.0.0.1:6381/1?alias=master','redis://127.0.0.1:6382/0']
-redis_setup: 'cluster'
+redis_dsn_session_type: 'cluster'
+redis_dsn_cache_type: 'cluster'
+redis_dsn_doctrine_type: 'cluster'
+
+
 ````
 
 
@@ -172,9 +180,12 @@ session_handler:    'snc_redis.session.handler'
 redis_dsn_session:  ['redis://127.0.0.1:26379/0','redis://127.0.0.1:26379/0']
 redis_dsn_cache:    ['redis://127.0.0.1:26379/1','redis://127.0.0.1:26379/1']
 redis_dsn_doctrine: ['redis://127.0.0.1:26379/2','redis://127.0.0.1:26379/2']
-redis_setup: 'sentinel'
-redis_sentinel_master_name: 'mymaster'
-redis_sentinel_prefer_slave: '127.0.0.1'
+redis_dsn_session_type: 'sentinel'
+redis_dsn_cache_type: 'sentinel'
+redis_dsn_doctrine_type: 'sentinel'
+redis_session_sentinel_master_name: 'sessions_mon'
+redis_cache_sentinel_master_name: 'lru_cache_mon'
+redis_doctrine_sentinel_master_name: 'lru_cache_mon'
 ````
 In this case it is required to provide redis-sentinel endpoints with db numbers for redis_dsn_session,redis_dsn_cache,redis_dsn_doctrine. 
 In parameter redis_sentinel_master_name master service name, which configured in sentinel.conf, needs to be provided

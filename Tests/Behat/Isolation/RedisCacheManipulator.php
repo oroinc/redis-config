@@ -50,6 +50,11 @@ class RedisCacheManipulator
     public function saveRedisState(): int
     {
         $keys = $this->redisClient->keys('*');
+
+        if (empty($keys)) {
+            return 0;
+        }
+
         $values = $this->redisClient->mget($keys);
 
         $this->data = \array_combine($keys, $values);

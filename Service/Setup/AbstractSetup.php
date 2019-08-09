@@ -6,13 +6,15 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class AbstractSetup
- * @package Oro\Bundle\RedisConfigBundle\Service\Setup
+ * {@inheritdoc}
  */
 abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
 {
     /** @var ContainerInterface */
     protected $container;
+
+    /** @var string */
+    protected $redisClient;
 
     /**
      * @param ContainerInterface|null $container
@@ -23,8 +25,29 @@ abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
     }
 
     /**
-     * @param array $config
-     * @return mixed
+     * @param string $redisClient Possible values 'session', 'cache', 'doctrine'
+     *
+     * @return $this
+     */
+    public function setRedisClient(string $redisClient)
+    {
+        $this->redisClient = $redisClient;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRedisClient()
+    {
+        return $this->redisClient ? : 'default';
+    }
+
+    /**
+     * @param array  $config
+     *
+     * @return array
      */
     abstract public function getConfig(array $config);
 }

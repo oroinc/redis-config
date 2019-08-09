@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Yaml\Parser;
 
-class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
+class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var OroRedisConfigExtension
@@ -43,8 +43,8 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
     public function loadCacheParameterDataProvider()
     {
         return [
-            ['redis_dsn_cache','redis://127.0.0.1:6379/0'],
-            ['redis_dsn_doctrine','redis://127.0.0.1:6379/1']
+            ['redis_dsn_cache', 'redis://127.0.0.1:6379/0'],
+            ['redis_dsn_doctrine', 'redis://127.0.0.1:6379/1']
         ];
     }
 
@@ -52,7 +52,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
      * @dataProvider loadSessionParameterDataProvider
      *
      * @param array $params
-     * @param bool $isEnabled
+     * @param bool  $isEnabled
      */
     public function testRedisEnabledForSession($params, $isEnabled)
     {
@@ -71,14 +71,14 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'redis_dsn_session' => 'redis://127.0.0.1:6379/0',
-                    'session_handler' => OroRedisConfigExtension::REDIS_SESSION_HANDLER
+                    'session_handler'   => OroRedisConfigExtension::REDIS_SESSION_HANDLER
                 ],
                 true
             ],
             [
                 [
                     'redis_dsn_session' => 'redis://127.0.0.1:6379/0',
-                    'session_handler' => 'session.handler.native_file'
+                    'session_handler'   => 'session.handler.native_file'
                 ],
                 false
             ],
@@ -97,7 +97,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
         foreach ($params as $values) {
             $this->container->setParameter($values[0], $values[1]);
         }
-        $this->extension->load(array(), $this->container);
+        $this->extension->load([], $this->container);
         $this->assertNotEmpty($this->container->getResources());
     }
 
@@ -148,7 +148,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return \PHPUnit\Framework\MockObject\MockObject
      */
     private function getExtensionMock()
     {
@@ -161,6 +161,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit_Framework_TestCase
             ->willReturnCallback(function ($path) use ($yamlParser) {
                 return $yamlParser->parse(file_get_contents($path));
             });
+
         return $extension;
     }
 }

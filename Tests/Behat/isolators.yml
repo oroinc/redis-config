@@ -4,6 +4,7 @@ services:
         arguments:
             -
                 'snc_redis.cache': 'Cache'
-                'snc_redis.doctrine': 'Doctrine cache'
+                'snc_redis.doctrine': 'Doctrine'
+#                'snc_redis.session': 'Session'
         tags:
             - { name: 'oro_behat.isolator', priority: 100 }

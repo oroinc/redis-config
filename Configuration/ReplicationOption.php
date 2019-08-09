@@ -4,18 +4,19 @@ namespace Oro\Bundle\RedisConfigBundle\Configuration;
 
 use Oro\Bundle\RedisConfigBundle\Connection\Aggregate\SentinelReplication;
 use Predis\Configuration\OptionsInterface;
-use Predis\Configuration\ReplicationOption as OriginalReplicationOption;
+use Predis\Configuration\ReplicationOption as BaseReplicationOption;
 use Predis\Connection\Aggregate\MasterSlaveReplication;
 use Predis\Connection\Aggregate\ReplicationInterface;
 
-class ReplicationOption extends OriginalReplicationOption
+/**
+ * {@inheritdoc}
+ */
+class ReplicationOption extends BaseReplicationOption
 {
     /**
-     * Initiate OroReplication service instead of original
-     *
-     *
      * @param OptionsInterface $options
-     * @param mixed $value
+     * @param mixed            $value
+     *
      * @return \Closure|mixed|null|MasterSlaveReplication
      */
     public function filter(OptionsInterface $options, $value)
@@ -31,6 +32,7 @@ class ReplicationOption extends OriginalReplicationOption
         if ($value === 'sentinel') {
             return function ($sentinels, $options) {
                 $sentinelReplication = new SentinelReplication($options->service, $sentinels, $options->connections);
+
                 return $sentinelReplication->setPreferSlave($options->getPreferSlave());
             };
         }

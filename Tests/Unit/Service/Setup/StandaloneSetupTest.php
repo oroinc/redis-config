@@ -5,7 +5,7 @@ namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Service\Setup;
 use Oro\Bundle\RedisConfigBundle\Service\Setup;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class StandaloneSetupTest extends \PHPUnit_Framework_TestCase
+class StandaloneSetupTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ContainerBuilder
@@ -19,6 +19,7 @@ class StandaloneSetupTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getConfigDataProvider
+     *
      * @param $configAlias
      * @param $params
      * @param $dsnConfig
@@ -29,8 +30,10 @@ class StandaloneSetupTest extends \PHPUnit_Framework_TestCase
         $redisSetup = new Setup\StandaloneSetup();
         $redisSetup->setContainer($this->container);
         $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input);
-        $this->assertEquals($dsnConfig, $output[$configAlias]['dsn']);
+        $output = $redisSetup
+            ->setRedisClient($configAlias)
+            ->getConfig($input);
+        $this->assertEquals($dsnConfig, $output['dsn']);
     }
 
     /**
@@ -41,17 +44,17 @@ class StandaloneSetupTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 'session',
-                ['type' => 'predis', 'alias' => 'session'],
+                ['type' => 'predis', 'alias' => 'session', 'options' => ['connection_persistent' => true]],
                 'redis://127.0.0.1:6379/0'
             ],
             [
                 'cache',
-                ['type' => 'predis', 'alias' => 'cache',],
+                ['type' => 'predis', 'alias' => 'cache', 'options' => ['connection_persistent' => true]],
                 'redis://127.0.0.1:6379/1'
             ],
             [
                 'doctrine',
-                ['type' => 'predis', 'alias' => 'doctrine',],
+                ['type' => 'predis', 'alias' => 'doctrine'],
                 'redis://127.0.0.1:6379/2'
             ],
         ];

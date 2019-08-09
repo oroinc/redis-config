@@ -2,6 +2,7 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
+use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass as CacheConfiguration;
 use Oro\Bundle\CacheBundle\Provider\MemoryCacheChain;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,30 +14,33 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
  */
 class DoctrineCacheCompilerPass implements CompilerPassInterface
 {
+    private const DOCTRINE_CACHE_SERVICE           = 'oro.doctrine.abstract';
+    private const DOCTRINE_CACHE_NO_MEMORY_SERVICE = 'oro.doctrine.abstract.without_memory_cache';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
         if ($this->isRedisEnabledForDoctrine($container)) {
-            $abstractCacheDef = $container->getDefinition('oro.doctrine.abstract');
+            $abstractCacheDef = $container->getDefinition(self::DOCTRINE_CACHE_SERVICE);
             $container->setDefinition(
-                'oro.doctrine.abstract',
+                self::DOCTRINE_CACHE_SERVICE,
                 $this->getMemoryCacheChain($abstractCacheDef)
             );
             $container->setDefinition(
-                'oro.doctrine.abstract.without_memory_cache',
+                self::DOCTRINE_CACHE_NO_MEMORY_SERVICE,
                 $abstractCacheDef
             );
             foreach ($this->getDoctrineCacheServices($container) as $serviceId) {
                 $serviceDef = $container->getDefinition($serviceId);
                 if ($serviceDef instanceof DefinitionDecorator
-                    && strpos($serviceDef->getParent(), 'oro.cache.abstract') === 0
+                    && strpos($serviceDef->getParent(), CacheConfiguration::DATA_CACHE_SERVICE) === 0
                 ) {
                     $newServiceDef = new DefinitionDecorator(
                         str_replace(
-                            'oro.cache.abstract',
-                            'oro.doctrine.abstract',
+                            CacheConfiguration::DATA_CACHE_SERVICE,
+                            self::DOCTRINE_CACHE_SERVICE,
                             $serviceDef->getParent()
                         )
                     );
@@ -120,14 +124,14 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
      *
      * @return Definition
      */
-    private function getMemoryCacheChain(Definition $cacheProvider)
+    protected function getMemoryCacheChain(Definition $cacheProvider)
     {
         $definition = new Definition(
             MemoryCacheChain::class,
             [[$cacheProvider]]
         );
         $definition->setAbstract(true);
-
+        
         return $definition;
     }
 }

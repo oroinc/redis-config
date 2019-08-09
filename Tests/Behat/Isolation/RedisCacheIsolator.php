@@ -142,8 +142,9 @@ class RedisCacheIsolator implements IsolatorInterface
 
     /**
      * @param ContainerInterface $container
-     * @param string $serviceName
-     * @param string $name
+     * @param string             $serviceName
+     * @param string             $name
+     *
      * @return null|RedisCacheManipulator
      */
     private function buildManipulator(
@@ -157,8 +158,9 @@ class RedisCacheIsolator implements IsolatorInterface
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $method
+     *
      * @return string
      */
     private function buildMessage(array $data, string $method): string

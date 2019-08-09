@@ -7,7 +7,7 @@ use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
-class SetupFactoryTest extends \PHPUnit_Framework_TestCase
+class SetupFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ContainerBuilder
@@ -20,14 +20,15 @@ class SetupFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider loadCacheParameterDataProvider
+     * @dataProvider redisTypeDataProvider
+     *
      * @param string $setup
      */
     public function testFactory($setup)
     {
         $factory = new SetupFactory();
         $factory->setContainer($this->container);
-        $message = sprintf('You have requested a non-existent service "oro.redis_config.setup.%s"', $setup);
+        $message = sprintf('You have requested a non-existent service "oro.redis_config.setup.standalone"');
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionMessage($message);
         $factory->factory($setup);
@@ -36,18 +37,12 @@ class SetupFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function loadCacheParameterDataProvider()
+    public function redisTypeDataProvider()
     {
         return [
-            [
-                Setup\StandaloneSetup::TYPE,
-            ],
-            [
-                Setup\ClusterSetup::TYPE,
-            ],
-            [
-                Setup\SentinelSetup::TYPE,
-            ],
+            ['cache'],
+            ['doctrine'],
+            ['session']
         ];
     }
 }
