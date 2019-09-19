@@ -24,17 +24,12 @@ class SetupFactory
     }
 
     /**
-     * @param $redisType
+     * @param $setupType
      *
      * @return ClusterSetup|SentinelSetup|StandaloneSetup
      */
-    public function factory($redisType)
+    public function factory($setupType)
     {
-        $param = sprintf('redis_dsn_%s_type', $redisType);
-        $setupType = $this->container->hasParameter($param) ?
-            $this->container->getParameter($param) :
-            StandaloneSetup::TYPE;
-
         switch ($setupType) {
             case SentinelSetup::TYPE:
                 return $this->container->get('oro.redis_config.setup.sentinel');
