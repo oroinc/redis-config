@@ -128,9 +128,16 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     private function loadAndValidateRedisClientConfig(ContainerBuilder $container, string $redisClient): array
     {
         $config = $this->parseYmlConfig($this->fileLocator->locate($redisClient . '/config.yml'));
-        $redisDsn = new RedisDsn($container->getParameter('redis_dsn_' . $redisClient));
-        if ($redisDsn->getSocket()) {
-            $config['snc_redis']['clients'][$redisClient]['options']['connection_persistent'] = false;
+        $redisDsnClientConfigs = $container->getParameter('redis_dsn_' . $redisClient);
+        if (is_string($redisDsnClientConfigs)) {
+            $redisDsnClientConfigs = [$redisDsnClientConfigs];
+        }
+        foreach ($redisDsnClientConfigs as $redisDsnClientConfig) {
+            $redisDsn = new RedisDsn($redisDsnClientConfig);
+            if ($redisDsn->getSocket()) {
+                $config['snc_redis']['clients'][$redisClient]['options']['connection_persistent'] = false;
+                break;
+            }
         }
 
         return $config;
