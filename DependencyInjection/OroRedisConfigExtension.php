@@ -66,15 +66,15 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             $this->setContainerParameters($container);
 
             if ($this->isRedisEnabledForSessions($container)) {
-                $configs[] = $this->loadAndValidateRedisClienConfig($container, 'session');
+                $configs[] = $this->loadAndValidateRedisClientConfig($container, 'session');
             }
 
             if ($this->isRedisEnabledForCache($container)) {
-                $configs[] = $this->loadAndValidateRedisClienConfig($container, 'cache');
+                $configs[] = $this->loadAndValidateRedisClientConfig($container, 'cache');
             }
 
             if ($this->isRedisEnabledForDoctrine($container)) {
-                $configs[] = $this->loadAndValidateRedisClienConfig($container, 'doctrine');
+                $configs[] = $this->loadAndValidateRedisClientConfig($container, 'doctrine');
             }
         } else {
             $configs[] = $this->parseYmlConfig($this->fileLocator->locate('redis_disabled.yml'));
@@ -123,12 +123,21 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      *
      * @return array
      */
-    private function loadAndValidateRedisClienConfig(ContainerBuilder $container, string $redisClient): array
+    private function loadAndValidateRedisClientConfig(ContainerBuilder $container, string $redisClient): array
     {
         $config = $this->parseYmlConfig($this->fileLocator->locate($redisClient . '/config.yml'));
-        $redisDsn = new RedisDsn($container->getParameter('redis_dsn_' . $redisClient));
-        if ($redisDsn->getSocket()) {
-            $config['snc_redis']['clients'][$redisClient]['options']['connection_persistent'] = false;
+
+        $redisDsnClientConfigs = $container->getParameter('redis_dsn_' . $redisClient);
+        if (is_string($redisDsnClientConfigs)) {
+            $redisDsnClientConfigs = [$redisDsnClientConfigs];
+        }
+
+        foreach ($redisDsnClientConfigs as $redisDsnClientConfig) {
+            $redisDsn = new RedisDsn($redisDsnClientConfig);
+            if ($redisDsn->getSocket()) {
+                $config['snc_redis']['clients'][$redisClient]['options']['connection_persistent'] = false;
+                break;
+            }
         }
 
         return $config;
