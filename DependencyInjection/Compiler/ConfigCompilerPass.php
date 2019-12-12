@@ -6,6 +6,7 @@ use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Configure services for redis usage.
@@ -13,6 +14,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class ConfigCompilerPass implements CompilerPassInterface
 {
     use RedisEnabledCheckTrait;
+
+    const IP_ADDRESS_PROVIDER_SERVICE_ID     = 'oro.redis_config.ip_address_provider';
+    const CLIENT_OPTIONS_SERVICE_ID_TEMPLATE = 'snc_redis.client.%s_options';
+    const PREFER_SLAVE_PARAM_NAME_TEMPLATE   = 'redis_%s_sentinel_prefer_slave';
 
     const URL_CACHE_TYPE      = 'oro_redirect.url_cache_type';
     const URL_CACHE_STORAGE   = 'storage';
@@ -27,38 +32,49 @@ class ConfigCompilerPass implements CompilerPassInterface
             return;
         }
 
-        foreach ($container->getDefinitions() as $definition) {
-            if ($definition->getClass() === Options::class) {
-                $types = ['cache', 'doctrine', 'session'];
-                foreach ($types as $type) {
-                    if (false === $container->hasParameter(sprintf('redis_%s_sentinel_prefer_slave', $type))) {
-                        continue;
-                    }
-
-                    $argsCount = \count($definition->getArguments());
-                    if (!$argsCount) {
-                        $definition->addArgument([]);
-                        $argsCount++;
-                    }
-                    if ($argsCount === 1) {
-                        $definition->addArgument(
-                            $container->getParameter(
-                                sprintf('redis_%s_sentinel_prefer_slave', $type)
-                            )
-                        );
-                    } else {
-                        $definition->replaceArgument(
-                            1,
-                            $container->getParameter(
-                                sprintf('redis_%s_sentinel_prefer_slave', $type)
-                            )
-                        );
-                    }
-                }
-            }
-        }
-
+        $this->configPreferSlaveOptions($container);
         $this->configSlugCache($container);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    private function configPreferSlaveOptions(ContainerBuilder $container)
+    {
+        $types = ['cache', 'doctrine', 'session'];
+        foreach ($types as $type) {
+            $preferSlaveParamName = sprintf(self::PREFER_SLAVE_PARAM_NAME_TEMPLATE, $type);
+            if (!$container->hasParameter($preferSlaveParamName)) {
+                continue;
+            }
+            $clientOptionsServiceId = sprintf(self::CLIENT_OPTIONS_SERVICE_ID_TEMPLATE, $type);
+            if (!$container->hasDefinition($clientOptionsServiceId)) {
+                continue;
+            }
+            $clientOptionsDef = $container->getDefinition($clientOptionsServiceId);
+            if ($clientOptionsDef->getClass() !== Options::class) {
+                continue;
+            }
+
+            // inject IP address provider
+            $clientOptionsDef->addMethodCall(
+                'setIpAddressProvider',
+                [new Reference(self::IP_ADDRESS_PROVIDER_SERVICE_ID)]
+            );
+            // inject the preferSlave option
+            $argsCount = \count($clientOptionsDef->getArguments());
+            if (!$argsCount) {
+                $clientOptionsDef->addArgument([]);
+                $argsCount++;
+            }
+            if ($argsCount === 1) {
+                $clientOptionsDef->addArgument($container->getParameter($preferSlaveParamName));
+            } else {
+                $clientOptionsDef->replaceArgument(1, $container->getParameter($preferSlaveParamName));
+            }
+            // remove "redis_*_sentinel_prefer_slave" parameter that is unneeded anymore
+            $container->getParameterBag()->remove($preferSlaveParamName);
+        }
     }
 
     /**

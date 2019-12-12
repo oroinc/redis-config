@@ -18,3 +18,8 @@ services:
     class: Oro\Bundle\RedisConfigBundle\Service\Setup\StandaloneSetup
     calls:
       - ['setContainer', ['@service_container']]
+
+  oro.redis_config.ip_address_provider:
+    class: Oro\Bundle\RedisConfigBundle\Configuration\IpAddressProvider
+    arguments:
+      - "@=container.hasParameter('server_ip_address') ? parameter('server_ip_address') : null"
