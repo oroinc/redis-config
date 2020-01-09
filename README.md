@@ -248,9 +248,12 @@ server_ip_address: '%env(SERVER_IP_ADDRESS)%'
 
 Also, please pay attention, you have to set up at least 2 sentinel endpoints, otherwise integration will not work.
 
-### Related links
+Resources
+---------
 
-- [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)
-- [PedisBundle Documentation](https://github.com/nrk/predis)
-- [Redis Sentinel Documentation](https://redis.io/topics/sentinel)
-- [Redis cluster tutorial](https://redis.io/topics/cluster-tutorial)
+  * [OroCommerce, OroCRM and OroPlatform Documentation](https://doc.oroinc.com)
+  * [Contributing](https://doc.oroinc.com/community/contribute/)
+  * [SncRedisBundle Documentation](https://github.com/snc/SncRedisBundle/blob/master/Resources/doc/index.md)
+  * [PedisBundle Documentation](https://github.com/nrk/predis)
+  * [Redis Sentinel Documentation](https://redis.io/topics/sentinel)
+  * [Redis cluster tutorial](https://redis.io/topics/cluster-tutorial)
