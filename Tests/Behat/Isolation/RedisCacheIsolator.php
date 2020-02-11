@@ -15,7 +15,10 @@ class RedisCacheIsolator implements IsolatorInterface
 {
     private const REDIS_ENABLED_ENV_VAR = 'CACHE';
 
-    /** @var array */
+    /** @var ContainerInterface */
+    private $container;
+
+    /** @var string[] */
     private $knownClients;
 
     /** @var RedisCacheManipulator[] */
@@ -23,19 +26,18 @@ class RedisCacheIsolator implements IsolatorInterface
 
     /**
      * @param ContainerInterface $container
-     * @param array $knownClients
+     * @param string[] $knownClients
      */
     public function __construct(ContainerInterface $container, array $knownClients)
     {
+        $this->container = $container;
         $this->knownClients = $knownClients;
-
-        $this->buildManipulators($container);
     }
 
     /** {@inheritdoc} */
     public function isApplicable(ContainerInterface $container)
     {
-        return \getenv(self::REDIS_ENABLED_ENV_VAR) === 'REDIS';
+        return \getenv(self::REDIS_ENABLED_ENV_VAR) === 'REDIS' && (bool)$this->knownClients;
     }
 
     /** {@inheritdoc} */
@@ -78,7 +80,7 @@ class RedisCacheIsolator implements IsolatorInterface
     /** {@inheritdoc} */
     public function isOutdatedState()
     {
-        foreach ($this->manipulators as $manipulator) {
+        foreach ($this->getManipulators() as $manipulator) {
             $data = $manipulator->restoreData();
             if ($data) {
                 return true;
@@ -102,7 +104,7 @@ class RedisCacheIsolator implements IsolatorInterface
         $startTime = \microtime(true);
 
         $results = [];
-        foreach ($this->manipulators as $manipulator) {
+        foreach ($this->getManipulators() as $manipulator) {
             $results[$manipulator->getName()] = $manipulator->saveRedisState();
         }
 
@@ -117,40 +119,11 @@ class RedisCacheIsolator implements IsolatorInterface
         $startTime = \microtime(true);
 
         $results = [];
-        foreach ($this->manipulators as $manipulator) {
+        foreach ($this->getManipulators() as $manipulator) {
             $results[$manipulator->getName()] = $manipulator->restoreRedisState();
         }
 
         return [\microtime(true) - $startTime, $results];
-    }
-
-    /**
-     * @param ContainerInterface $container
-     */
-    private function buildManipulators(ContainerInterface $container): void
-    {
-        foreach ($this->knownClients as $serviceName => $type) {
-            $manipulator = $this->buildManipulator($container, $serviceName, $type);
-            if ($manipulator) {
-                $this->manipulators[] = $manipulator;
-            }
-        }
-    }
-
-    /**
-     * @param ContainerInterface $container
-     * @param string $serviceName
-     * @param string $name
-     * @return null|RedisCacheManipulator
-     */
-    private function buildManipulator(
-        ContainerInterface $container,
-        string $serviceName,
-        string $name
-    ): ?RedisCacheManipulator {
-        $service = $container->get($serviceName, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-
-        return $service instanceof Client ? new RedisCacheManipulator($service, $name) : null;
     }
 
     /**
@@ -175,5 +148,57 @@ class RedisCacheIsolator implements IsolatorInterface
             ),
             $method
         );
+    }
+
+    /**
+     * @return RedisCacheManipulator[]
+     */
+    private function getManipulators(): array
+    {
+        if (!$this->manipulators) {
+            if (!$this->container->has('oro.redis_config.client_locator')) {
+                throw new \RuntimeException(
+                    \sprintf(
+                        'Incorrect container configuration: service "%s" required',
+                        'oro.redis_config.client_locator'
+                    )
+                );
+            }
+
+            $clientLocator = $this->container->get('oro.redis_config.client_locator');
+            foreach ($this->knownClients as $serviceName => $type) {
+                if (!$clientLocator->has($serviceName)) {
+                    throw new \RuntimeException(
+                        \sprintf(
+                            'Required redis client "%s" for cache type "%s" not registered',
+                            $serviceName,
+                            $type
+                        )
+                    );
+                }
+
+                $service = $clientLocator->get($serviceName);
+                if (!$service instanceof Client) {
+                    throw new \RuntimeException(
+                        \sprintf(
+                            'Required redis client "%s" for cache type "%s" must be instance of %s class',
+                            $serviceName,
+                            $type,
+                            Client::class
+                        )
+                    );
+                }
+
+                $this->manipulators[] = new RedisCacheManipulator($service, $type);
+            }
+
+            if (!$this->manipulators) {
+                throw new \RuntimeException(
+                    \sprintf('Incorrect container configuration: no registered radis clients')
+                );
+            }
+        }
+
+        return $this->manipulators;
     }
 }

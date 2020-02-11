@@ -26,3 +26,13 @@ services:
         class: Oro\Bundle\RedisConfigBundle\Configuration\IpAddressProvider
         arguments:
             - "@=container.hasParameter('server_ip_address') ? parameter('server_ip_address') : null"
+
+    oro.redis_config.client_locator:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        public: true
+        arguments:
+            -
+                snc_redis.cache: '@?snc_redis.cache'
+                snc_redis.doctrine: '@?snc_redis.doctrine'
+                snc_redis.session: '@?snc_redis.session'
+        tags: ['container.service_locator']
