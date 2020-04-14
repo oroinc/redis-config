@@ -12,7 +12,7 @@ class SetupFactoryTest extends \PHPUnit\Framework\TestCase
     /** @var SetupFactory */
     private $factory;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $sentinelSetup = $this->createMock(SentinelSetup::class);
         $clusterSetup = $this->createMock(ClusterSetup::class);
