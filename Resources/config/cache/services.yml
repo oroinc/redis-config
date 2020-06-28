@@ -5,12 +5,6 @@ services:
     arguments:
       - '@snc_redis.cache'
 
-  oro.file_cache.abstract:
-    abstract: true
-    class: Doctrine\Common\Cache\PredisCache
-    arguments:
-      - '@snc_redis.cache'
-
   oro_wsse_authentication.nonce_cache:
     abstract: true
     class: Symfony\Component\Cache\Simple\RedisCache
