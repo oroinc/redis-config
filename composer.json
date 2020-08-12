@@ -6,7 +6,7 @@
     "license": "MIT",
     "keywords": ["Oro", "OroPlatform", "OroCommerce", "OroCRM", "Redis"],
     "require": {
-        "predis/predis": "^1.0",
+        "predis/predis": "1.1.1",
         "snc/redis-bundle": "~3.2.0"
     },
     "require-dev": {
