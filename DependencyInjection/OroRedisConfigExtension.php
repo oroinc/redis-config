@@ -14,8 +14,6 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class OroRedisConfigExtension checks that redis is enabled and load service configurations
- *
- * @package Oro\Bundle\RedisConfigBundle\DependencyInjection
  */
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
@@ -52,6 +50,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      * @param ContainerBuilder $container
      *
      * @throws \Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function prepend(ContainerBuilder $container)
     {
