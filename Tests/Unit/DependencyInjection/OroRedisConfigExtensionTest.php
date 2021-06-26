@@ -3,21 +3,17 @@
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection;
 
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\OroRedisConfigExtension;
+use Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Yaml\Parser;
 
 class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var OroRedisConfigExtension
-     */
-    protected $extension;
+    /** @var OroRedisConfigExtension */
+    private $extension;
 
-    /**
-     * @var ContainerBuilder
-     */
-    protected $container;
+    /** @var ContainerBuilder */
+    private $container;
 
     protected function setUp(): void
     {
@@ -27,20 +23,14 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider loadCacheParameterDataProvider
-     *
-     * @param string $parameter
-     * @param string $value
      */
-    public function testRedisEnabledForConfig($parameter, $value)
+    public function testRedisEnabledForConfig(string $parameter, string $value)
     {
         $this->container->setParameter($parameter, $value);
         $this->assertTrue($this->extension->isRedisEnabled($this->container));
     }
 
-    /**
-     * @return array
-     */
-    public function loadCacheParameterDataProvider()
+    public function loadCacheParameterDataProvider(): array
     {
         return [
             ['redis_dsn_cache','redis://127.0.0.1:6379/0'],
@@ -50,11 +40,8 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider loadSessionParameterDataProvider
-     *
-     * @param array $params
-     * @param bool $isEnabled
      */
-    public function testRedisEnabledForSession($params, $isEnabled)
+    public function testRedisEnabledForSession(array $params, bool $isEnabled)
     {
         foreach ($params as $param => $value) {
             $this->container->setParameter($param, $value);
@@ -62,10 +49,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($isEnabled, $this->extension->isRedisEnabled($this->container));
     }
 
-    /**
-     * @return array
-     */
-    public function loadSessionParameterDataProvider()
+    public function loadSessionParameterDataProvider(): array
     {
         return [
             [
@@ -97,7 +81,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
         foreach ($params as $values) {
             $this->container->setParameter($values[0], $values[1]);
         }
-        $this->extension->load(array(), $this->container);
+        $this->extension->load([], $this->container);
         $this->assertNotEmpty($this->container->getResources());
     }
 
@@ -105,7 +89,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
     {
         $this->testLoad();
         $definition = $this->container->getDefinition('oro.cache.abstract');
-        $this->assertEquals('Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache', $definition->getClass());
+        $this->assertEquals(PredisCache::class, $definition->getClass());
         $this->assertTrue($definition->isAbstract());
         $this->assertEquals(
             new Reference('snc_redis.cache'),
@@ -117,7 +101,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
     {
         $this->testLoad();
         $definition = $this->container->getDefinition('oro.doctrine.abstract');
-        $this->assertEquals('Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache', $definition->getClass());
+        $this->assertEquals(PredisCache::class, $definition->getClass());
         $this->assertTrue($definition->isAbstract());
         $this->assertEquals(
             new Reference('snc_redis.doctrine'),
@@ -127,7 +111,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 
     public function testPrependConfigRedisDisabled()
     {
-        $this->getExtensionMock()->prepend($this->container);
+        $this->extension->prepend($this->container);
         $config = $this->container->getExtensionConfig('snc_redis');
         $this->assertEmpty($config[0]['clients']['default']['dsns']);
     }
@@ -138,29 +122,11 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
         foreach ($params as $values) {
             $this->container->setParameter($values[0], $values[1]);
         }
-        $extension = $this->getExtensionMock();
-        $extension->prepend($this->container);
+        $this->extension->prepend($this->container);
         $config = $this->container->getExtensionConfig('snc_redis');
         $this->assertArrayHasKey('cache', $config[0]['clients']);
         $this->assertArrayHasKey('doctrine', $config[0]['clients']);
         $this->assertNotEmpty($config[0]['clients']['cache']['dsn']);
         $this->assertNotEmpty($config[0]['clients']['doctrine']['dsn']);
-    }
-
-    /**
-     * @return \PHPUnit\Framework\MockObject\MockObject
-     */
-    private function getExtensionMock()
-    {
-        $yamlParser = new Parser();
-        $extension = $this->getMockBuilder(get_class($this->extension))
-            ->setMethodsExcept(['prepend', 'load', 'isRedisEnabled'])
-            ->getMock();
-        $extension->expects($this->any())
-            ->method('parseYmlConfig')
-            ->willReturnCallback(function ($path) use ($yamlParser) {
-                return $yamlParser->parse(file_get_contents($path));
-            });
-        return $extension;
     }
 }
