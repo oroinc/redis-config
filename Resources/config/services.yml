@@ -36,3 +36,14 @@ services:
                 snc_redis.doctrine: '@?snc_redis.doctrine'
                 snc_redis.session: '@?snc_redis.session'
         tags: ['container.service_locator']
+
+    Oro\Bundle\RedisConfigBundle\Provider\RedisRequirementsProvider:
+        class: Oro\Bundle\RedisConfigBundle\Provider\RedisRequirementsProvider
+        arguments:
+            [
+                snc_redis.cache: '@?snc_redis.cache',
+                snc_redis.doctrine: '@?snc_redis.doctrine',
+                snc_redis.session: '@?snc_redis.session'
+            ]
+        tags:
+            - { name: oro.requirements_provider }
