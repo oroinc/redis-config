@@ -7,6 +7,7 @@ namespace Oro\Bundle\RedisConfigBundle\Provider;
 use Oro\Bundle\InstallerBundle\Provider\AbstractRequirementsProvider;
 use Oro\Bundle\InstallerBundle\Symfony\Requirements\RequirementCollection;
 use Predis\Client;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\PredisException;
 
 /**
@@ -41,6 +42,10 @@ class RedisRequirementsProvider extends AbstractRequirementsProvider
     protected function addVersionAndConfigurationRequirements(RequirementCollection $collection): void
     {
         foreach (array_filter($this->clients) as $id => $client) {
+            if ($client->getConnection() instanceof AggregateConnectionInterface) {
+                $client = $client->getClientFor('master');
+            }
+
             $isConnected = $client->isConnected();
             $errorMessage = '';
             if (!$isConnected) {
