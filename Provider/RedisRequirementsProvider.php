@@ -7,7 +7,7 @@ namespace Oro\Bundle\RedisConfigBundle\Provider;
 use Oro\Bundle\InstallerBundle\Provider\AbstractRequirementsProvider;
 use Oro\Bundle\InstallerBundle\Symfony\Requirements\RequirementCollection;
 use Predis\Client;
-use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\Aggregate\ReplicationInterface;
 use Predis\PredisException;
 
 /**
@@ -42,8 +42,11 @@ class RedisRequirementsProvider extends AbstractRequirementsProvider
     protected function addVersionAndConfigurationRequirements(RequirementCollection $collection): void
     {
         foreach (array_filter($this->clients) as $id => $client) {
-            if ($client->getConnection() instanceof AggregateConnectionInterface) {
-                $client = $client->getClientFor('master');
+            if ($client->getConnection() instanceof ReplicationInterface) {
+                $client->connect();
+
+                $currentConnection = $client->getConnection()->getCurrent();
+                $client->getConnection()->switchToMaster();
             }
 
             $isConnected = $client->isConnected();
@@ -73,6 +76,10 @@ class RedisRequirementsProvider extends AbstractRequirementsProvider
                     'Connection for "' . $id . '" service has invalid configuration.',
                     'Connection for "' . $id . '" service has invalid configuration. '. $errorMessage
                 );
+            }
+
+            if ($client->getConnection() instanceof ReplicationInterface) {
+                $client->getConnection()->switchTo($currentConnection);
             }
         }
     }
