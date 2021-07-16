@@ -20,11 +20,6 @@ class SetupFactory
     /** @var StandaloneSetup */
     private $standaloneSetup;
 
-    /**
-     * @param SentinelSetup   $sentinelSetup
-     * @param ClusterSetup    $clusterSetup
-     * @param StandaloneSetup $standaloneSetup
-     */
     public function __construct(
         SentinelSetup $sentinelSetup,
         ClusterSetup $clusterSetup,

@@ -17,9 +17,6 @@ class Options extends BaseOptions
     /** @var IpAddressProvider */
     private $ipAddressProvider;
 
-    /**
-     * @return string
-     */
     public function getPreferSlave(): string
     {
         if (null === $this->preferSlave) {
@@ -51,9 +48,6 @@ class Options extends BaseOptions
         $this->preferSlave = $preferSlave;
     }
 
-    /**
-     * @param IpAddressProvider $ipAddressProvider
-     */
     public function setIpAddressProvider(IpAddressProvider $ipAddressProvider): void
     {
         $this->ipAddressProvider = $ipAddressProvider;

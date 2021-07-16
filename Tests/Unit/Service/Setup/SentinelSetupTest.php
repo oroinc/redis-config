@@ -19,11 +19,6 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getConfigDataProvider
-     * @param $configAlias
-     * @param $params
-     * @param $dsnConfig
-     * @param $dbIndex
-     * @param $sentinelService
      */
     public function testGetConfig($configAlias, $params, $dsnConfig, $dbIndex, $sentinelService)
     {
@@ -75,7 +70,6 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider incorrectConfigDataProvider
-     * @param $dsn
      */
     public function testIncorrectConfig($configAlias, $dsn)
     {

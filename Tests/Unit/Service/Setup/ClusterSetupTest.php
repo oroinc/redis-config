@@ -19,9 +19,6 @@ class ClusterSetupTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getConfigDataProvider
-     * @param $configAlias
-     * @param $params
-     * @param $dsnConfig
      */
     public function testGetConfig($configAlias, $params, $dsnConfig)
     {

@@ -30,9 +30,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array            $configs
-     * @param ContainerBuilder $container
-     *
      * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container)
@@ -47,8 +44,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param ContainerBuilder $container
-     *
      * @throws \Exception
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
@@ -116,11 +111,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
      * InvalidArgumentException: Persistent connection IDs are not supported when using UNIX domain sockets
      * when SOCKET used with persistent connection enabled
      * @see https://github.com/nrk/predis/blob/v1.1.1/src/Connection/StreamConnection.php#L199
-     *
-     * @param ContainerBuilder $container
-     * @param string           $redisClient
-     *
-     * @return array
      */
     private function loadAndValidateRedisClientConfig(ContainerBuilder $container, string $redisClient): array
     {
@@ -144,8 +134,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
 
     /**
      * set container parameters for redis
-     *
-     * @param ContainerBuilder $container
      */
     private function setContainerParameters(ContainerBuilder $container)
     {

@@ -13,9 +13,6 @@ abstract class AbstractSetup implements SetupInterface, ContainerAwareInterface
     /** @var ContainerInterface */
     protected $container;
 
-    /**
-     * @param ContainerInterface|null $container
-     */
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
