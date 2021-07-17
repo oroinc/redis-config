@@ -10,9 +10,6 @@ class IpAddressProvider
     /** @var string|null */
     private $serverIpAddress;
 
-    /**
-     * @param string|null $serverIpAddress
-     */
     public function __construct(string $serverIpAddress = null)
     {
         if ('' === $serverIpAddress) {
@@ -23,8 +20,6 @@ class IpAddressProvider
 
     /**
      * Returns the IP address of the server under which the current script is executing.
-     *
-     * @return string
      */
     public function getServerIpAddress(): string
     {

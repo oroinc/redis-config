@@ -15,8 +15,6 @@ class SentinelReplication extends BaseSentinelReplication
 
     /**
      * Sets IP address or hostname of a preferable slave server.
-     *
-     * @param string|null $preferSlave
      */
     public function setPreferSlave(?string $preferSlave): void
     {
@@ -54,8 +52,6 @@ class SentinelReplication extends BaseSentinelReplication
 
     /**
      * Returns a preferable slave.
-     *
-     * @return NodeConnectionInterface|null
      */
     private function pickPreferredSlave(): ?NodeConnectionInterface
     {
@@ -76,10 +72,6 @@ class SentinelReplication extends BaseSentinelReplication
 
     /**
      * Checks whether the given connection represents a configured preferable slave.
-     *
-     * @param NodeConnectionInterface $connection
-     *
-     * @return bool
      */
     private function isPreferredSlave(NodeConnectionInterface $connection): bool
     {
