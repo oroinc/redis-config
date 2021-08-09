@@ -23,9 +23,6 @@ class ConfigCompilerPass implements CompilerPassInterface
     private const URL_CACHE_STORAGE   = 'storage';
     private const URL_CACHE_KEY_VALUE = 'key_value';
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
         if (!$this->isRedisEnabled($container)) {
@@ -36,9 +33,6 @@ class ConfigCompilerPass implements CompilerPassInterface
         $this->configSlugCache($container);
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function configPreferSlaveOptions(ContainerBuilder $container)
     {
         $types = ['cache', 'doctrine', 'session'];
@@ -71,9 +65,6 @@ class ConfigCompilerPass implements CompilerPassInterface
         }
     }
 
-    /**
-     * @param ContainerBuilder $container
-     */
     private function configSlugCache(ContainerBuilder $container)
     {
         if ($this->isRedisEnabledForCache($container)

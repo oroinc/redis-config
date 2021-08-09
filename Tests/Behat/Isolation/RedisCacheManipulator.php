@@ -22,10 +22,6 @@ class RedisCacheManipulator
     /** @var array */
     private $data;
 
-    /**
-     * @param Client $redisClient
-     * @param string $name
-     */
     public function __construct(Client $redisClient, string $name)
     {
         $this->redisClient = $redisClient;
@@ -34,9 +30,6 @@ class RedisCacheManipulator
         $this->fileName = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'behat_redis_' . \strtolower($name);
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -44,8 +37,6 @@ class RedisCacheManipulator
 
     /**
      * Save state of cache and return values count.
-     *
-     * @return int
      */
     public function saveRedisState(): int
     {
@@ -65,8 +56,6 @@ class RedisCacheManipulator
 
     /**
      * Restore state of cache and return values count.
-     *
-     * @return int
      */
     public function restoreRedisState(): int
     {
@@ -85,9 +74,6 @@ class RedisCacheManipulator
         return count($this->data);
     }
 
-    /**
-     * @return array
-     */
     public function restoreData(): array
     {
         $this->data = [];

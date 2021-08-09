@@ -96,9 +96,6 @@ class RedisCacheIsolator implements IsolatorInterface
         return 'cache';
     }
 
-    /**
-     * @return array
-     */
     private function saveRedisState(): array
     {
         $startTime = \microtime(true);
@@ -111,9 +108,6 @@ class RedisCacheIsolator implements IsolatorInterface
         return [\microtime(true) - $startTime, $results];
     }
 
-    /**
-     * @return array
-     */
     private function restoreRedisState(): array
     {
         $startTime = \microtime(true);
@@ -126,11 +120,6 @@ class RedisCacheIsolator implements IsolatorInterface
         return [\microtime(true) - $startTime, $results];
     }
 
-    /**
-     * @param array $data
-     * @param string $method
-     * @return string
-     */
     private function buildMessage(array $data, string $method): string
     {
         return \sprintf(
