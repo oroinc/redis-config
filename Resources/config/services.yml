@@ -36,3 +36,10 @@ services:
                 snc_redis.doctrine: '@?snc_redis.doctrine'
                 snc_redis.session: '@?snc_redis.session'
         tags: ['container.service_locator']
+
+    oro.redis_config.session.handler:
+        class: Oro\Bundle\RedisConfigBundle\Session\Storage\Handler\RedisSessionHandler
+        decorates: snc_redis.session.handler
+        parent: snc_redis.session.handler
+        calls:
+            - ['setLogger', ['@logger']]
