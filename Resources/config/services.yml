@@ -47,3 +47,10 @@ services:
             ]
         tags:
             - { name: oro.requirements_provider }
+
+    oro.redis_config.session.handler:
+        class: Oro\Bundle\RedisConfigBundle\Session\Storage\Handler\RedisSessionHandler
+        decorates: snc_redis.session.handler
+        parent: snc_redis.session.handler
+        calls:
+            - ['setLogger', ['@logger']]
