@@ -38,9 +38,6 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
         if ($this->isRedisEnabledForCache($container)) {
             $loader->load('cache/services.yml');
         }
-        if ($this->isRedisEnabledForDoctrine($container)) {
-            $loader->load('doctrine/services.yml');
-        }
     }
 
     /**

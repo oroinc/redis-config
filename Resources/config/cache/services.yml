@@ -1,7 +1,7 @@
 services:
-  oro.cache.abstract:
-    abstract: true
-    class: Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache
+  oro_cache.data.adapter:
+    public: false
+    parent: cache.adapter.redis
     arguments:
       - '@snc_redis.cache'
 

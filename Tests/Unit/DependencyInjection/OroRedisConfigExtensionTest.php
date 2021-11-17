@@ -3,9 +3,7 @@
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection;
 
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\OroRedisConfigExtension;
-use Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 
 class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
 {
@@ -83,30 +81,6 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
         }
         $this->extension->load([], $this->container);
         $this->assertNotEmpty($this->container->getResources());
-    }
-
-    public function testCacheServicesDefinition()
-    {
-        $this->testLoad();
-        $definition = $this->container->getDefinition('oro.cache.abstract');
-        $this->assertEquals(PredisCache::class, $definition->getClass());
-        $this->assertTrue($definition->isAbstract());
-        $this->assertEquals(
-            new Reference('snc_redis.cache'),
-            $definition->getArgument(0)
-        );
-    }
-
-    public function testDoctrineServicesDefinition()
-    {
-        $this->testLoad();
-        $definition = $this->container->getDefinition('oro.doctrine.abstract');
-        $this->assertEquals(PredisCache::class, $definition->getClass());
-        $this->assertTrue($definition->isAbstract());
-        $this->assertEquals(
-            new Reference('snc_redis.doctrine'),
-            $definition->getArgument(0)
-        );
     }
 
     public function testPrependConfigRedisDisabled()

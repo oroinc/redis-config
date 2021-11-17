@@ -2,14 +2,14 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache;
 
-use Doctrine\Common\Cache\PredisCache as DoctrinePredisCache;
 use Predis\ClientInterface;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 /**
  * Overrides \Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache to fix
  * {@see https://github.com/doctrine/cache/pull/361}
  */
-class PredisCache extends DoctrinePredisCache
+class PredisCache extends RedisAdapter
 {
     private ClientInterface $client;
 

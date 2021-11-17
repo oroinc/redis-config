@@ -1,6 +1,0 @@
-services:
-  oro.doctrine.abstract:
-    abstract: true
-    class: Oro\Bundle\RedisConfigBundle\Doctrine\Common\Cache\PredisCache
-    arguments:
-      - '@snc_redis.doctrine'

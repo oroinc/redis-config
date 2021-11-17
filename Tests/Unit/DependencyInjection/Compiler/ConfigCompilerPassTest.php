@@ -2,8 +2,12 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection\Compiler;
 
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
+use Oro\Bundle\CacheBundle\Provider\MemoryCacheChain;
 use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\ConfigCompilerPass;
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\DoctrineCacheCompilerPass;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -24,6 +28,7 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $container->setDefinition($ipAddressProviderServiceId, new Definition());
         $container->setDefinition('snc_redis.client.cache_options', $clientOptionsDef);
         $container->setParameter($preferSlaveParamName, $argumentValue);
+        $this->prepareSncRedisDefinitions($container);
 
         $configCompilerPass = new ConfigCompilerPass();
         $configCompilerPass->process($container);
@@ -57,6 +62,7 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $container->setParameter('redis_doctrine_sentinel_prefer_slave', '192.168.10.2');
         $container->setDefinition('snc_redis.client.session_options', $sessionClientOptionsDef);
         $container->setParameter('redis_session_sentinel_prefer_slave', '192.168.10.3');
+        $this->prepareSncRedisDefinitions($container);
 
         $configCompilerPass = new ConfigCompilerPass();
         $configCompilerPass->process($container);
@@ -105,10 +111,53 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $container = new ContainerBuilder();
         $container->setParameter('oro_redirect.url_cache_type', 'storage');
         $container->setParameter('redis_dsn_cache', 'redis://127.0.0.1:6379/0');
+        $this->prepareSncRedisDefinitions($container);
 
         $compilerPass = new ConfigCompilerPass();
         $compilerPass->process($container);
 
         $this->assertEquals('key_value', $container->getParameter('oro_redirect.url_cache_type'));
+    }
+
+    public function testCacheServicesDefinition()
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_cache', 'redis://127.0.0.1:6379/0');
+        $this->prepareSncRedisDefinitions($container);
+
+        $compilerPass = new ConfigCompilerPass();
+        $compilerPass->process($container);
+
+        $definition = $container->getDefinition('oro.cache.abstract');
+        $this->assertEquals(MemoryCacheChain::class, $definition->getClass());
+        $this->assertTrue($definition->isAbstract());
+        $doctrineWrapperDefinition = $definition->getArgument(0);
+        $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
+        $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
+        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
+    }
+
+    public function testDoctrineServicesDefinition()
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_doctrine', 'redis://127.0.0.1:6379/1');
+        $this->prepareSncRedisDefinitions($container);
+
+        $compilerPass = new DoctrineCacheCompilerPass();
+        $compilerPass->process($container);
+
+        $definition = $container->getDefinition('oro.doctrine.abstract');
+        $this->assertEquals(MemoryCacheChain::class, $definition->getClass());
+        $this->assertTrue($definition->isAbstract());
+        $doctrineWrapperDefinition = $definition->getArgument(0);
+        $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
+        $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
+        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
+    }
+
+    private function prepareSncRedisDefinitions(ContainerBuilder $containerBuilder): void
+    {
+        $containerBuilder->setDefinition(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID, new Definition());
+        $containerBuilder->setDefinition(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID, new Definition());
     }
 }

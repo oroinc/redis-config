@@ -2,7 +2,9 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
+use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass;
 use Oro\Bundle\RedisConfigBundle\Configuration\Options;
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisCacheTrait;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,10 +16,12 @@ use Symfony\Component\DependencyInjection\Reference;
 class ConfigCompilerPass implements CompilerPassInterface
 {
     use RedisEnabledCheckTrait;
+    use RedisCacheTrait;
 
     private const IP_ADDRESS_PROVIDER_SERVICE_ID     = 'oro.redis_config.ip_address_provider';
     private const CLIENT_OPTIONS_SERVICE_ID_TEMPLATE = 'snc_redis.client.%s_options';
     private const PREFER_SLAVE_PARAM_NAME_TEMPLATE   = 'redis_%s_sentinel_prefer_slave';
+    public const SNC_REDIS_CACHE_SERVICE_ID = 'snc_redis.cache';
 
     private const URL_CACHE_TYPE      = 'oro_redirect.url_cache_type';
     private const URL_CACHE_STORAGE   = 'storage';
@@ -31,6 +35,7 @@ class ConfigCompilerPass implements CompilerPassInterface
 
         $this->configPreferSlaveOptions($container);
         $this->configSlugCache($container);
+        $this->configDataCache($container);
     }
 
     private function configPreferSlaveOptions(ContainerBuilder $container)
@@ -72,6 +77,18 @@ class ConfigCompilerPass implements CompilerPassInterface
             && $container->getParameter(self::URL_CACHE_TYPE) === self::URL_CACHE_STORAGE
         ) {
             $container->setParameter(self::URL_CACHE_TYPE, self::URL_CACHE_KEY_VALUE);
+        }
+    }
+
+    private function configDataCache(ContainerBuilder $container) : void
+    {
+        if ($this->isRedisEnabledForCache($container)) {
+            $redisCache = $this->getRedisServiceDefinition($container, self::SNC_REDIS_CACHE_SERVICE_ID);
+            $container->setDefinition(CacheConfigurationPass::DATA_CACHE_NO_MEMORY_SERVICE, $redisCache);
+            $container->setDefinition(
+                CacheConfigurationPass::DATA_CACHE_SERVICE,
+                CacheConfigurationPass::getMemoryCacheChain($redisCache)
+            );
         }
     }
 }

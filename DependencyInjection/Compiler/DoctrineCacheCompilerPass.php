@@ -3,6 +3,8 @@
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
 use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass as CacheConfiguration;
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisCacheTrait;
+use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,8 +14,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class DoctrineCacheCompilerPass implements CompilerPassInterface
 {
+    use RedisEnabledCheckTrait;
+    use RedisCacheTrait;
+
     private const DOCTRINE_CACHE_SERVICE           = 'oro.doctrine.abstract';
     private const DOCTRINE_CACHE_NO_MEMORY_SERVICE = 'oro.doctrine.abstract.without_memory_cache';
+    public const SNC_REDIS_DOCTRINE_SERVICE_ID = 'snc_redis.doctrine';
 
     /**
      * {@inheritdoc}
@@ -21,7 +27,10 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         if ($this->isRedisEnabledForDoctrine($container)) {
-            $abstractCacheDef = $container->getDefinition(self::DOCTRINE_CACHE_SERVICE);
+            $abstractCacheDef = $this->getRedisServiceDefinition(
+                $container,
+                self::SNC_REDIS_DOCTRINE_SERVICE_ID
+            );
             $container->setDefinition(
                 self::DOCTRINE_CACHE_SERVICE,
                 CacheConfiguration::getMemoryCacheChain($abstractCacheDef)
@@ -50,18 +59,6 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
                 }
             }
         }
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     *
-     * @return bool
-     */
-    private function isRedisEnabledForDoctrine(ContainerBuilder $container)
-    {
-        return
-            $container->hasParameter('redis_dsn_doctrine')
-            && null !== $container->getParameter('redis_dsn_doctrine');
     }
 
     /**
