@@ -47,12 +47,26 @@ class RedisSessionHandlerTest extends \PHPUnit\Framework\TestCase
         unset($_SERVER['REQUEST_URI']);
     }
 
+    public function testLogLockSessionWithDefaultLogLevel(): void
+    {
+        $_SERVER['REQUEST_URI'] = 'http://localhost/redis';
+        $this->assertLogger();
+        $this->handler->read('session_id');
+    }
+
     /**
      * @dataProvider logLockSessionDataProvider
      */
-    public function testLogLockSession(string $logLevel): void
+    public function testLogLockSessionWithCustomLogLevel(string $logLevel): void
     {
         $_SERVER['REQUEST_URI'] = 'http://localhost/redis';
+        $this->assertLogger($logLevel);
+        $this->handler->setLogLevel($logLevel);
+        $this->handler->read('session_id');
+    }
+
+    private function assertLogger(string $logLevel = LogLevel::INFO): void
+    {
         $this->logger
             ->expects($this->once())
             ->method('log')
@@ -64,8 +78,6 @@ class RedisSessionHandlerTest extends \PHPUnit\Framework\TestCase
                     $this->stringContains('$route=/redis'),
                 )
             );
-        $this->handler->setLogLevel($logLevel);
-        $this->handler->read('session_id');
     }
 
     public function logLockSessionDataProvider(): \Generator

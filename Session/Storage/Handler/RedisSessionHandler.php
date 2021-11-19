@@ -39,7 +39,7 @@ class RedisSessionHandler extends BaseRedisSessionHandler implements LoggerAware
 {
     use LoggerAwareTrait;
 
-    private string $logLevel = LogLevel::CRITICAL;
+    private string $logLevel = LogLevel::INFO;
     private string $lockKey;
     private ?string $token = null;
     private int $spinLockWait;
