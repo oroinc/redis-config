@@ -42,7 +42,7 @@ class RedisSessionHandler extends BaseRedisSessionHandler implements LoggerAware
     /**
      * @var string
      */
-    private $logLevel = LogLevel::CRITICAL;
+    private $logLevel = LogLevel::INFO;
 
     /**
      * @var string
