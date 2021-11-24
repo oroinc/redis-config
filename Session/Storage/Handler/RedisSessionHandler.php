@@ -77,7 +77,7 @@ class RedisSessionHandler extends BaseRedisSessionHandler implements LoggerAware
     /**
      * {@inheritdoc}
      */
-    protected function doRead($sessionId)
+    protected function doRead($sessionId): string
     {
         if ($this->locking && !$this->locked && !$this->lockSession($sessionId)) {
             return false;
