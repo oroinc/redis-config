@@ -7,7 +7,7 @@
     "keywords": ["Oro", "OroPlatform", "OroCommerce", "OroCRM", "Redis"],
     "require": {
         "predis/predis": "~1.1.6",
-        "snc/redis-bundle": "~3.5.2"
+        "snc/redis-bundle": "~3.6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~9.5.1"
