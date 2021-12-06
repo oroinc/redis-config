@@ -8,32 +8,22 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class StandaloneSetupTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var ContainerBuilder
-     */
-    protected $container;
-
-    protected function setUp(): void
-    {
-        $this->container = new ContainerBuilder();
-    }
-
-    /**
      * @dataProvider getConfigDataProvider
      */
-    public function testGetConfig($configAlias, $params, $dsnConfig)
+    public function testGetConfig(string $configAlias, array $params, string $dsnConfig): void
     {
-        $this->container->setParameter('redis_dsn_' . $configAlias, $dsnConfig);
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_' . $configAlias, $dsnConfig);
+
         $redisSetup = new Setup\StandaloneSetup();
-        $redisSetup->setContainer($this->container);
-        $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input, $configAlias);
+        $redisSetup->setContainer($container);
+
+        $output = $redisSetup->getConfig([$configAlias => $params], $configAlias);
+
         $this->assertEquals($dsnConfig, $output['dsn']);
     }
 
-    /**
-     * @return array
-     */
-    public function getConfigDataProvider()
+    public function getConfigDataProvider(): array
     {
         return [
             [

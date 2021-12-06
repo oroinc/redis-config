@@ -8,40 +8,36 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class SentinelSetupTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var ContainerBuilder
-     */
-    protected $container;
-
-    protected function setUp(): void
-    {
-        $this->container = new ContainerBuilder();
-    }
-
-    /**
      * @dataProvider getConfigDataProvider
      */
-    public function testGetConfig($configAlias, $params, $dsnConfig, $dbIndex, $sentinelService)
-    {
+    public function testGetConfig(
+        string $configAlias,
+        array $params,
+        array $dsnConfig,
+        int $dbIndex,
+        string $sentinelService
+    ): void {
         $dsnConfigSet = [];
         array_walk($dsnConfig, function ($val, $key) use (&$dsnConfigSet, $dbIndex) {
             $dsnConfigSet[$key] = $val . '/' . $dbIndex;
         });
-        $this->container->setParameter('redis_dsn_' . $configAlias, $dsnConfigSet);
-        $this->container->setParameter('redis_' . $configAlias . '_sentinel_master_name', $sentinelService);
+
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_' . $configAlias, $dsnConfigSet);
+        $container->setParameter('redis_' . $configAlias . '_sentinel_master_name', $sentinelService);
+
         $redisSetup = new Setup\SentinelSetup();
-        $redisSetup->setContainer($this->container);
-        $input = [$configAlias => $params];
-        $output = $redisSetup->getConfig($input, $configAlias);
+        $redisSetup->setContainer($container);
+
+        $output = $redisSetup->getConfig([$configAlias => $params], $configAlias);
+
         $this->assertEquals($dsnConfig, $output['dsn']);
         $this->assertEquals(Setup\SentinelSetup::TYPE, $output['options']['replication']);
         $this->assertEquals($sentinelService, $output['options']['service']);
         $this->assertEquals($dbIndex, $output['options']['parameters']['database']);
     }
 
-    /**
-     * @return array
-     */
-    public function getConfigDataProvider()
+    public function getConfigDataProvider(): array
     {
         return [
             [
@@ -71,21 +67,23 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider incorrectConfigDataProvider
      */
-    public function testIncorrectConfig($configAlias, $dsn)
+    public function testIncorrectConfig(string $configAlias, string $dsn): void
     {
         $input = ['cache' => ['dsn' => $dsn]];
-        $this->container->setParameter('redis_dsn_cache', $dsn);
-        $this->container->setParameter('redis_cache_sentinel_master_name', 'mymaster');
+
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_cache', $dsn);
+        $container->setParameter('redis_cache_sentinel_master_name', 'mymaster');
+
         $redisSetup = new Setup\SentinelSetup();
-        $redisSetup->setContainer($this->container);
+        $redisSetup->setContainer($container);
+
         $this->expectException(\InvalidArgumentException::class);
+
         $redisSetup->getConfig($input, $configAlias);
     }
 
-    /**
-     * @return array
-     */
-    public function incorrectConfigDataProvider()
+    public function incorrectConfigDataProvider(): array
     {
         return [
             [

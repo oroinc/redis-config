@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Provider;
 
 use Oro\Bundle\RedisConfigBundle\Provider\RedisRequirementsProvider;
-use PHPUnit\Framework\TestCase;
 use Predis\Client;
 
-class RedisRequirementsProviderTest extends TestCase
+class RedisRequirementsProviderTest extends \PHPUnit\Framework\TestCase
 {
     public function testNoAvailableClients()
     {
-        $provider = $this->getProvider([]);
+        $provider = new RedisRequirementsProvider([]);
         $requirements = $provider->getOroRequirements();
 
         $this->assertNotNull($requirements);
@@ -21,8 +20,8 @@ class RedisRequirementsProviderTest extends TestCase
 
     public function testConnectionNotConfigured()
     {
-        $provider = $this->getProvider([
-            'id' => $this->getClientMock('1.0', false)
+        $provider = new RedisRequirementsProvider([
+            'id' => $this->getClient('1.0', false)
         ]);
         $requirements = $provider->getOroRequirements()->all();
 
@@ -36,8 +35,8 @@ class RedisRequirementsProviderTest extends TestCase
     public function testVersionRequirementIsFulfilled()
     {
         $version = RedisRequirementsProvider::REQUIRED_VERSION;
-        $provider = $this->getProvider([
-            'id' => $this->getClientMock($version)
+        $provider = new RedisRequirementsProvider([
+            'id' => $this->getClient($version)
         ]);
         $requirements = $provider->getOroRequirements()->all();
 
@@ -50,8 +49,8 @@ class RedisRequirementsProviderTest extends TestCase
 
     public function testVersionRequirementNotFulfilled()
     {
-        $provider = $this->getProvider([
-            'id' => $this->getClientMock('1.0')
+        $provider = new RedisRequirementsProvider([
+            'id' => $this->getClient('1.0')
         ]);
         $requirements = $provider->getOroRequirements()->all();
 
@@ -65,35 +64,26 @@ class RedisRequirementsProviderTest extends TestCase
 
     public function testMultipleClients()
     {
-        $provider = $this->getProvider([
-            'id1' => $this->getClientMock('1.0'),
-            'id2' => $this->getClientMock('2.0'),
+        $provider = new RedisRequirementsProvider([
+            'id1' => $this->getClient('1.0'),
+            'id2' => $this->getClient('2.0'),
         ]);
         $requirements = $provider->getOroRequirements()->all();
 
         $this->assertCount(2, $requirements);
     }
 
-    protected function getClientMock(string $version, bool $isConnected = true): Client
+    private function getClient(string $version, bool $isConnected = true): Client
     {
-        $client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $client->method('__call')
+        $client = $this->createMock(Client::class);
+        $client->expects(self::any())
+            ->method('__call')
             ->withAnyParameters()
             ->willReturn(['Server' => ['redis_version' => $version]]);
-        $client->method('isConnected')->willReturn($isConnected);
+        $client->expects(self::any())
+            ->method('isConnected')
+            ->willReturn($isConnected);
 
         return $client;
-    }
-
-    /**
-     * @param Client[] $clients
-     * @return RedisRequirementsProvider
-     */
-    protected function getProvider(array $clients): RedisRequirementsProvider
-    {
-        return new RedisRequirementsProvider($clients);
     }
 }

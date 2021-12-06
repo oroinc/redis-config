@@ -2,8 +2,8 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\Session\Storage\Handler;
 
-use \Predis\Client as RedisClient;
 use Oro\Bundle\RedisConfigBundle\Session\Storage\Handler\RedisSessionHandler;
+use Predis\Client as RedisClient;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -67,8 +67,7 @@ class RedisSessionHandlerTest extends \PHPUnit\Framework\TestCase
 
     private function assertLogger(string $logLevel = LogLevel::INFO): void
     {
-        $this->logger
-            ->expects($this->once())
+        $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $logLevel,
