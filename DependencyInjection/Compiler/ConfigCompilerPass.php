@@ -84,7 +84,6 @@ class ConfigCompilerPass implements CompilerPassInterface
     {
         if ($this->isRedisEnabledForCache($container)) {
             $redisCache = $this->getRedisServiceDefinition($container, self::SNC_REDIS_CACHE_SERVICE_ID);
-            $container->setDefinition(CacheConfigurationPass::DATA_CACHE_NO_MEMORY_SERVICE, $redisCache);
             $container->setDefinition(
                 CacheConfigurationPass::DATA_CACHE_SERVICE,
                 CacheConfigurationPass::getMemoryCacheChain($redisCache)
