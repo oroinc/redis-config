@@ -1,5 +1,5 @@
 services:
-  oro_cache.data.adapter:
+  oro.cache.adapter.persistent:
     public: false
     parent: cache.adapter.redis
     arguments:
