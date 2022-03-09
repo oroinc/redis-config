@@ -10,7 +10,7 @@
         "snc/redis-bundle": "~3.6.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~9.5.1"
+        "phpunit/phpunit": "9.5.13"
     },
     "autoload": {
         "psr-4": {"Oro\\Bundle\\RedisConfigBundle\\": ""},
@@ -20,7 +20,7 @@
     "prefer-stable": true,
     "extra": {
         "branch-alias": {
-            "dev-master": "5.0-dev"
+            "dev-master": "5.1-dev"
         }
     }
 }
