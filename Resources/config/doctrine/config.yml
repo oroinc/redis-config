@@ -1,14 +1,14 @@
 snc_redis:
-  clients:
-    doctrine:
-      type: predis
-      alias: doctrine
-      options:
-        connection_persistent: true
-        profile: 3.2
-        # have to set `profile` explicitly to avoid Exception
-        # Attempted to call an undefined method named "getEnvPlaceholders" of class "
-        #    Symfony\Component\DependencyInjection\ParameterBag\ParameterBag"
-        # in Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass
-        # caused by \Snc\RedisBundle\DependencyInjection\SncRedisExtension::loadPredisClient
-        # when trying to resolve `profile`, see $container->resolveEnvPlaceholders($profile, true)
+    clients:
+        doctrine:
+            type: predis
+            alias: doctrine
+            options:
+                connection_persistent: true
+                profile: 3.2
+                # have to set `profile` explicitly to avoid Exception
+                # Attempted to call an undefined method named "getEnvPlaceholders" of class "
+                #    Symfony\Component\DependencyInjection\ParameterBag\ParameterBag"
+                # in Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass
+                # caused by \Snc\RedisBundle\DependencyInjection\SncRedisExtension::loadPredisClient
+                # when trying to resolve `profile`, see $container->resolveEnvPlaceholders($profile, true)

@@ -2,11 +2,11 @@
 
 namespace Oro\Bundle\RedisConfigBundle\Tests\Unit\DependencyInjection\Compiler;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Oro\Bundle\CacheBundle\Provider\MemoryCacheChain;
+use Oro\Bundle\CacheBundle\Adapter\ChainAdapter;
 use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\ConfigCompilerPass;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler\DoctrineCacheCompilerPass;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -119,39 +119,23 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('key_value', $container->getParameter('oro_redirect.url_cache_type'));
     }
 
-    public function testCacheServicesDefinition()
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('redis_dsn_cache', 'redis://127.0.0.1:6379/0');
-        $this->prepareSncRedisDefinitions($container);
-
-        $compilerPass = new ConfigCompilerPass();
-        $compilerPass->process($container);
-
-        $definition = $container->getDefinition('oro.cache.abstract');
-        $this->assertEquals(MemoryCacheChain::class, $definition->getClass());
-        $this->assertTrue($definition->isAbstract());
-        $doctrineWrapperDefinition = $definition->getArgument(0);
-        $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
-        $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
-        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
-    }
-
     public function testDoctrineServicesDefinition()
     {
         $container = new ContainerBuilder();
         $container->setParameter('redis_dsn_doctrine', 'redis://127.0.0.1:6379/1');
         $this->prepareSncRedisDefinitions($container);
+        $container->setDefinition('oro.doctrine.abstract', new Definition(RedisAdapter::class));
+        $container->setDefinition('oro.cache.adapter.array', new Definition(ArrayAdapter::class));
 
         $compilerPass = new DoctrineCacheCompilerPass();
         $compilerPass->process($container);
 
         $definition = $container->getDefinition('oro.doctrine.abstract');
-        $this->assertEquals(MemoryCacheChain::class, $definition->getClass());
+        $this->assertEquals(ChainAdapter::class, $definition->getClass());
         $this->assertTrue($definition->isAbstract());
-        $doctrineWrapperDefinition = $definition->getArgument(0);
-        $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
-        $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
+        $noMemoryCacheDefinition = $definition->getArgument(0);
+        $this->assertEquals(ArrayAdapter::class, $noMemoryCacheDefinition->getClass());
+        $redisAdapterDefinition = $definition->getArgument(1);
         $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
     }
 

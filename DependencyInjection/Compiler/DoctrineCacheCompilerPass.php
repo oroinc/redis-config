@@ -2,12 +2,14 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
+use Oro\Bundle\CacheBundle\Adapter\ChainAdapter;
 use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass as CacheConfiguration;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisCacheTrait;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * Configure Doctrine related caches.
@@ -21,19 +23,16 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
     private const DOCTRINE_CACHE_NO_MEMORY_SERVICE = 'oro.doctrine.abstract.without_memory_cache';
     public const SNC_REDIS_DOCTRINE_SERVICE_ID = 'snc_redis.doctrine';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if ($this->isRedisEnabledForDoctrine($container)) {
-            $abstractCacheDef = $this->getRedisServiceDefinition(
-                $container,
-                self::SNC_REDIS_DOCTRINE_SERVICE_ID
-            );
+            $abstractCacheDef = $container->getDefinition(self::DOCTRINE_CACHE_SERVICE);
+            $memoryCacheDef = $container->getDefinition('oro.cache.adapter.array');
+            $chainCacheDef = new Definition(ChainAdapter::class, [$memoryCacheDef, $abstractCacheDef]);
+            $chainCacheDef->setAbstract(true);
             $container->setDefinition(
                 self::DOCTRINE_CACHE_SERVICE,
-                CacheConfiguration::getMemoryCacheChain($abstractCacheDef)
+                $chainCacheDef
             );
             $container->setDefinition(
                 self::DOCTRINE_CACHE_NO_MEMORY_SERVICE,
@@ -42,19 +41,20 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
             foreach ($this->getDoctrineCacheServices($container) as $serviceId) {
                 $serviceDef = $container->getDefinition($serviceId);
                 if ($serviceDef instanceof ChildDefinition
-                    && str_starts_with($serviceDef->getParent(), CacheConfiguration::DATA_CACHE_SERVICE)
+                    && str_starts_with($serviceDef->getParent(), CacheConfiguration::DATA_CACHE_POOL)
                 ) {
                     $newServiceDef = new ChildDefinition(
                         str_replace(
-                            CacheConfiguration::DATA_CACHE_SERVICE,
+                            CacheConfiguration::DATA_CACHE_POOL,
                             self::DOCTRINE_CACHE_SERVICE,
                             $serviceDef->getParent()
                         )
                     );
-                    $newServiceDef->setArguments($serviceDef->getArguments());
+                    $newServiceDef->setArguments([$serviceDef->getArgument(1)]);
                     $newServiceDef->setProperties($serviceDef->getProperties());
                     $newServiceDef->setMethodCalls($serviceDef->getMethodCalls());
                     $newServiceDef->setPublic($serviceDef->isPublic());
+                    $newServiceDef->setTags($serviceDef->getTags());
                     $container->setDefinition($serviceId, $newServiceDef);
                 }
             }

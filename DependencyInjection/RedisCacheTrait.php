@@ -2,7 +2,6 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -19,9 +18,7 @@ trait RedisCacheTrait
             [$container->getDefinition($predisService)]
         );
         $cacheDefinition->setAbstract(true);
-        $doctrineProviderDefinition = new Definition(DoctrineProvider::class, [$cacheDefinition]);
-        $doctrineProviderDefinition->setFactory([DoctrineProvider::class, 'wrap']);
 
-        return $doctrineProviderDefinition;
+        return $cacheDefinition;
     }
 }

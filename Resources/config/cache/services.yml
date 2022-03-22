@@ -1,27 +1,21 @@
 services:
-  oro.cache.adapter.persistent:
-    public: false
-    parent: cache.adapter.redis
-    arguments:
-      - '@snc_redis.cache'
+    oro.cache.adapter.persistent:
+        public: false
+        parent: cache.adapter.redis
+        arguments:
+            - '@snc_redis.cache'
 
-  oro_wsse_authentication.nonce_cache:
-    abstract: true
-    class: Symfony\Component\Cache\Adapter\RedisAdapter
-    arguments:
-      - '@snc_redis.cache'
-      - '<namespace>' # set in WsseNonceCachePass
-      - '<lifetime>' # set in WsseNonceCachePass
+    oro_wsse_authentication.nonce_cache:
+        abstract: true
+        class: Symfony\Component\Cache\Adapter\RedisAdapter
+        arguments:
+            - '@snc_redis.cache'
+            - '<namespace>' # set in WsseNonceCachePass
+            - '<lifetime>' # set in WsseNonceCachePass
 
-  oro_embedded_form.csrf_token_cache:
-    class: Symfony\Component\Cache\Adapter\RedisAdapter
-    arguments:
-      - '@snc_redis.cache'
-      - 'oro_embedded_form'
-      - '%oro_embedded_form.csrf_token_lifetime%'
-
-  oro.cache.annotations:
-    public: false
-    parent: oro.cache.abstract
-    calls:
-      - [ setNamespace, [ 'oro_annotations_cache' ] ]
+    oro_embedded_form.csrf_token_cache:
+        class: Symfony\Component\Cache\Adapter\RedisAdapter
+        arguments:
+            - '@snc_redis.cache'
+            - 'oro_embedded_form'
+            - '%oro_embedded_form.csrf_token_lifetime%'

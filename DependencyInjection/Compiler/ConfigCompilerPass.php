@@ -2,7 +2,6 @@
 
 namespace Oro\Bundle\RedisConfigBundle\DependencyInjection\Compiler;
 
-use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass;
 use Oro\Bundle\RedisConfigBundle\Configuration\Options;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisCacheTrait;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
@@ -35,7 +34,6 @@ class ConfigCompilerPass implements CompilerPassInterface
 
         $this->configPreferSlaveOptions($container);
         $this->configSlugCache($container);
-        $this->configDataCache($container);
     }
 
     private function configPreferSlaveOptions(ContainerBuilder $container)
@@ -77,17 +75,6 @@ class ConfigCompilerPass implements CompilerPassInterface
             && $container->getParameter(self::URL_CACHE_TYPE) === self::URL_CACHE_STORAGE
         ) {
             $container->setParameter(self::URL_CACHE_TYPE, self::URL_CACHE_KEY_VALUE);
-        }
-    }
-
-    private function configDataCache(ContainerBuilder $container) : void
-    {
-        if ($this->isRedisEnabledForCache($container)) {
-            $redisCache = $this->getRedisServiceDefinition($container, self::SNC_REDIS_CACHE_SERVICE_ID);
-            $container->setDefinition(
-                CacheConfigurationPass::DATA_CACHE_SERVICE,
-                CacheConfigurationPass::getMemoryCacheChain($redisCache)
-            );
         }
     }
 }

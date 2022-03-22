@@ -1,0 +1,6 @@
+services:
+    oro.doctrine.abstract:
+        abstract: true
+        class: Symfony\Component\Cache\Adapter\RedisAdapter
+        arguments:
+          - '@snc_redis.doctrine'
