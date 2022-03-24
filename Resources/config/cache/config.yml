@@ -1,3 +1,6 @@
+framework:
+  cache:
+    default_redis_provider: snc_redis.cache
 snc_redis:
   clients:
     cache:
