@@ -12,9 +12,6 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class OroRedisConfigExtension checks that redis is enabled and load service configurations
- */
 class OroRedisConfigExtension extends Extension implements PrependExtensionInterface
 {
     use RedisEnabledCheckTrait;
@@ -30,7 +27,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @throws \Exception
+     * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -44,7 +41,7 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @throws \Exception
+     * {@inheritDoc}
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function prepend(ContainerBuilder $container)

@@ -53,7 +53,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
             [
                 [
                     'redis_dsn_session' => 'redis://127.0.0.1:6379/0',
-                    'session_handler' => OroRedisConfigExtension::REDIS_SESSION_HANDLER
+                    'session_handler' => 'snc_redis.session.handler'
                 ],
                 true
             ],
@@ -66,7 +66,7 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 [
-                    'session_handler' => OroRedisConfigExtension::REDIS_SESSION_HANDLER
+                    'session_handler' => 'snc_redis.session.handler'
                 ],
                 false
             ],
