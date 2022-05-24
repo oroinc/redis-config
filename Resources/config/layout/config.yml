@@ -1,0 +1,15 @@
+framework:
+    cache:
+        pools:
+            cache.oro_layout.render:
+                adapter: cache.adapter.redis
+                provider: snc_redis.layout
+                tags: true
+snc_redis:
+    clients:
+        layout:
+            type: predis
+            alias: layout
+            options:
+                connection_persistent: true
+                profile: 3.2
