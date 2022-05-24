@@ -32,7 +32,8 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
     {
         return [
             ['redis_dsn_cache','redis://127.0.0.1:6379/0'],
-            ['redis_dsn_doctrine','redis://127.0.0.1:6379/1']
+            ['redis_dsn_doctrine','redis://127.0.0.1:6379/1'],
+            ['redis_dsn_layout','redis://127.0.0.1:6379/2']
         ];
     }
 
@@ -100,7 +101,22 @@ class OroRedisConfigExtensionTest extends \PHPUnit\Framework\TestCase
         $config = $this->container->getExtensionConfig('snc_redis');
         $this->assertArrayHasKey('cache', $config[0]['clients']);
         $this->assertArrayHasKey('doctrine', $config[0]['clients']);
+        $this->assertArrayHasKey('layout', $config[0]['clients']);
         $this->assertNotEmpty($config[0]['clients']['cache']['dsn']);
         $this->assertNotEmpty($config[0]['clients']['doctrine']['dsn']);
+        $this->assertNotEmpty($config[0]['clients']['layout']['dsn']);
+    }
+
+    public function testPrependConfigLayoutCacheEnabled(): void
+    {
+        $params = $this->loadCacheParameterDataProvider();
+        foreach ($params as $values) {
+            $this->container->setParameter($values[0], $values[1]);
+        }
+        $this->extension->prepend($this->container);
+        $config = $this->container->getExtensionConfig('framework');
+        $renderCache = $config[0]['cache']['pools']['cache.oro_layout.render'];
+        $this->assertEquals('cache.adapter.redis_tag_aware', $renderCache['adapter']);
+        $this->assertEquals('snc_redis.layout', $renderCache['provider']);
     }
 }

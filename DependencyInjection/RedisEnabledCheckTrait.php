@@ -69,15 +69,20 @@ trait RedisEnabledCheckTrait
         return false;
     }
 
-    /**
-     * @param ContainerBuilder $container
-     *
-     * @return bool
-     */
-    public function isRedisEnabled(ContainerBuilder $container)
+    protected function isRedisEnabledForLayoutRender(ContainerBuilder $container) : bool
+    {
+        if ($this->validateRedisConfigDsnValue($container, 'redis_dsn_layout')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isRedisEnabled(ContainerBuilder $container): bool
     {
         return $this->isRedisEnabledForSessions($container)
             || $this->isRedisEnabledForCache($container)
-            || $this->isRedisEnabledForDoctrine($container);
+            || $this->isRedisEnabledForDoctrine($container)
+            || $this->isRedisEnabledForLayoutRender($container);
     }
 }
