@@ -70,6 +70,10 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             if ($this->isRedisEnabledForDoctrine($container)) {
                 $configs[] = $this->loadAndValidateRedisClientConfig($container, 'doctrine');
             }
+
+            if ($this->isRedisEnabledForLayoutRender($container)) {
+                $configs[] = $this->loadAndValidateRedisClientConfig($container, 'layout');
+            }
         } else {
             $configs[] = $this->parseYmlConfig($this->fileLocator->locate('redis_disabled.yml'));
         }
@@ -151,6 +155,11 @@ class OroRedisConfigExtension extends Extension implements PrependExtensionInter
             || null == $container->getParameter('redis_doctrine_type')
         ) {
             $container->setParameter('redis_doctrine_type', StandaloneSetup::TYPE);
+        }
+        if (!$container->hasParameter('redis_layout_type')
+            || null == $container->getParameter('redis_layout_type')
+        ) {
+            $container->setParameter('redis_layout_type', StandaloneSetup::TYPE);
         }
     }
 }
