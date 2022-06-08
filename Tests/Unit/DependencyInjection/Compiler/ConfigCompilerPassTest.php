@@ -159,5 +159,13 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
     {
         $containerBuilder->setDefinition(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID, new Definition());
         $containerBuilder->setDefinition(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID, new Definition());
+        $cacheAbstractDefinition = new Definition();
+        $cacheAbstractDefinition->setClass(RedisAdapter::class);
+        $cacheAbstractDefinition->addArgument(new Reference(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID));
+        $containerBuilder->setDefinition('oro_cache.snc_redis.cache', $cacheAbstractDefinition);
+        $doctrineAbstractDefinition = new Definition();
+        $doctrineAbstractDefinition->setClass(RedisAdapter::class);
+        $cacheAbstractDefinition->addArgument(new Reference(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID));
+        $containerBuilder->setDefinition('oro_cache.snc_redis.doctrine', $doctrineAbstractDefinition);
     }
 }

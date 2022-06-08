@@ -5,6 +5,18 @@ services:
     arguments:
       - '@snc_redis.cache'
 
+  #service for oro.cache.abstract
+  oro_cache.snc_redis.cache:
+    class: Symfony\Component\Cache\Adapter\RedisAdapter
+    arguments:
+      - '@snc_redis.cache'
+
+  #service for oro.doctrine.abstract
+  oro_cache.snc_redis.doctrine:
+    class: Symfony\Component\Cache\Adapter\RedisAdapter
+    arguments:
+      - '@snc_redis.doctrine'
+
   oro_wsse_authentication.nonce_cache:
     abstract: true
     class: Symfony\Component\Cache\Adapter\RedisAdapter
