@@ -15,3 +15,7 @@ snc_redis:
   session:
     client: session
     prefix: session
+oro_message_queue:
+  persistent_services:
+    # `snc_redis.session` can be persistent in order to not duplicate connections on container clear
+    - 'snc_redis.session'

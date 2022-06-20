@@ -36,9 +36,10 @@ class ConfigCompilerPass implements CompilerPassInterface
         $this->configPreferSlaveOptions($container);
         $this->configSlugCache($container);
         $this->configDataCache($container);
+        $this->configClientServices($container);
     }
 
-    private function configPreferSlaveOptions(ContainerBuilder $container)
+    private function configPreferSlaveOptions(ContainerBuilder $container): void
     {
         $types = ['cache', 'doctrine', 'session'];
         foreach ($types as $type) {
@@ -70,7 +71,7 @@ class ConfigCompilerPass implements CompilerPassInterface
         }
     }
 
-    private function configSlugCache(ContainerBuilder $container)
+    private function configSlugCache(ContainerBuilder $container): void
     {
         if ($this->isRedisEnabledForCache($container)
             && $container->hasParameter(self::URL_CACHE_TYPE)
@@ -89,6 +90,17 @@ class ConfigCompilerPass implements CompilerPassInterface
                 CacheConfigurationPass::DATA_CACHE_SERVICE,
                 CacheConfigurationPass::getMemoryCacheChain($redisCache)
             );
+        }
+    }
+
+    /**
+     * Configure client services as public in order to have them persistent
+     */
+    private function configClientServices(ContainerBuilder $container): void
+    {
+        foreach ($container->findTaggedServiceIds('snc_redis.client') as $id => $attr) {
+            $clientDefinition = $container->getDefinition($id);
+            $clientDefinition->setPublic(true);
         }
     }
 }

@@ -15,3 +15,7 @@ snc_redis:
         # in Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass
         # caused by \Snc\RedisBundle\DependencyInjection\SncRedisExtension::loadPredisClient
         # when trying to resolve `profile`, see $container->resolveEnvPlaceholders($profile, true)
+oro_message_queue:
+  persistent_services:
+    # `snc_redis.cache` can be persistent in order to not duplicate connections on container clear
+    - 'snc_redis.cache'

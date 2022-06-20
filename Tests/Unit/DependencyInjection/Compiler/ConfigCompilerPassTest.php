@@ -155,10 +155,27 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
     }
 
+    public function testSncRedisServices()
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('redis_dsn_cache', 'redis://127.0.0.1:6379/0');
+        $container->setParameter('redis_dsn_doctrine', 'redis://127.0.0.1:6379/1');
+        $this->prepareSncRedisDefinitions($container);
+
+        $compilerPass = new ConfigCompilerPass();
+        $compilerPass->process($container);
+        foreach ($container->findTaggedServiceIds('snc_redis.client') as $id => $attr) {
+            $clientDefinition = $container->getDefinition($id);
+            $this->assertTrue($clientDefinition->isPublic());
+        }
+    }
+
     private function prepareSncRedisDefinitions(ContainerBuilder $containerBuilder): void
     {
-        $containerBuilder->setDefinition(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID, new Definition());
-        $containerBuilder->setDefinition(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID, new Definition());
+        $sncRedisCache = new Definition();
+        $sncRedisCache->addTag('snc_redis.client');
+        $containerBuilder->setDefinition(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID, $sncRedisCache);
+        $containerBuilder->setDefinition(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID, $sncRedisCache);
         $cacheAbstractDefinition = new Definition();
         $cacheAbstractDefinition->setClass(RedisAdapter::class);
         $cacheAbstractDefinition->addArgument(new Reference(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID));
