@@ -1,17 +1,21 @@
 snc_redis:
-  clients:
+    clients:
+        session:
+            type: predis
+            alias: session
+            options:
+                connection_persistent: true
+                profile: 3.2
+                # have to set `profile` explicitly to avoid Exception
+                # Attempted to call an undefined method named "getEnvPlaceholders" of class
+                #    "Symfony\Component\DependencyInjection\ParameterBag\ParameterBag"
+                # in Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass
+                # caused by \Snc\RedisBundle\DependencyInjection\SncRedisExtension::loadPredisClient
+                # when trying to resolve `profile`, see $container->resolveEnvPlaceholders($profile, true)
     session:
-      type: predis
-      alias: session
-      options:
-        connection_persistent: true
-        profile: 3.2
-        # have to set `profile` explicitly to avoid Exception
-        # Attempted to call an undefined method named "getEnvPlaceholders" of class
-        #    "Symfony\Component\DependencyInjection\ParameterBag\ParameterBag"
-        # in Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass
-        # caused by \Snc\RedisBundle\DependencyInjection\SncRedisExtension::loadPredisClient
-        # when trying to resolve `profile`, see $container->resolveEnvPlaceholders($profile, true)
-  session:
-    client: session
-    prefix: session
+        client: session
+        prefix: session
+oro_message_queue:
+    persistent_services:
+      # `snc_redis.session` can be persistent in order to not duplicate connections on container clear
+      - 'snc_redis.session'

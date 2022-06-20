@@ -12,3 +12,7 @@ snc_redis:
             options:
                 connection_persistent: true
                 profile: 3.2
+oro_message_queue:
+    persistent_services:
+        # `snc_redis.layout` can be persistent in order to not duplicate connections on container clear
+        - 'snc_redis.layout'
