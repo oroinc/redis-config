@@ -134,7 +134,8 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $doctrineWrapperDefinition = $definition->getArgument(0);
         $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
         $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
-        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
+        $this->assertInstanceOf(Reference::class, $redisAdapterDefinition);
+        $this->assertEquals(RedisAdapter::class, $container->getDefinition($redisAdapterDefinition)->getClass());
     }
 
     public function testDoctrineServicesDefinition()
@@ -152,7 +153,8 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $doctrineWrapperDefinition = $definition->getArgument(0);
         $this->assertEquals(DoctrineProvider::class, $doctrineWrapperDefinition->getClass());
         $redisAdapterDefinition = $doctrineWrapperDefinition->getArgument(0);
-        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
+        $this->assertInstanceOf(Reference::class, $redisAdapterDefinition);
+        $this->assertEquals(RedisAdapter::class, $container->getDefinition($redisAdapterDefinition)->getClass());
     }
 
     public function testSncRedisServices()
