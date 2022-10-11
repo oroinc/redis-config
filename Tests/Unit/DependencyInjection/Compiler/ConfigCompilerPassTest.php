@@ -124,7 +124,6 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $container = new ContainerBuilder();
         $container->setParameter('redis_dsn_doctrine', 'redis://127.0.0.1:6379/1');
         $this->prepareSncRedisDefinitions($container);
-        $container->setDefinition('oro.doctrine.abstract', new Definition(RedisAdapter::class));
         $container->setDefinition('oro.cache.adapter.array', new Definition(ArrayAdapter::class));
 
         $compilerPass = new DoctrineCacheCompilerPass();
@@ -134,9 +133,11 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(ChainAdapter::class, $definition->getClass());
         $this->assertTrue($definition->isAbstract());
         $noMemoryCacheDefinition = $definition->getArgument(0);
-        $this->assertEquals(ArrayAdapter::class, $noMemoryCacheDefinition->getClass());
+        $this->assertInstanceOf(Reference::class, $noMemoryCacheDefinition);
+        $this->assertEquals(ArrayAdapter::class, $container->getDefinition($noMemoryCacheDefinition)->getClass());
         $redisAdapterDefinition = $definition->getArgument(1);
-        $this->assertEquals(RedisAdapter::class, $redisAdapterDefinition->getClass());
+        $this->assertInstanceOf(Reference::class, $redisAdapterDefinition);
+        $this->assertEquals(RedisAdapter::class, $container->getDefinition($redisAdapterDefinition)->getClass());
     }
 
     public function testSncRedisServices()
@@ -158,6 +159,7 @@ class ConfigCompilerPassTest extends \PHPUnit\Framework\TestCase
     {
         $sncRedisCache = new Definition();
         $sncRedisCache->addTag('snc_redis.client');
+        $sncRedisCache->setClass(RedisAdapter::class);
         $containerBuilder->setDefinition(ConfigCompilerPass::SNC_REDIS_CACHE_SERVICE_ID, $sncRedisCache);
         $containerBuilder->setDefinition(DoctrineCacheCompilerPass::SNC_REDIS_DOCTRINE_SERVICE_ID, $sncRedisCache);
     }

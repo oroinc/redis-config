@@ -6,10 +6,12 @@ use Oro\Bundle\CacheBundle\Adapter\ChainAdapter;
 use Oro\Bundle\CacheBundle\DependencyInjection\Compiler\CacheConfigurationPass as CacheConfiguration;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisCacheTrait;
 use Oro\Bundle\RedisConfigBundle\DependencyInjection\RedisEnabledCheckTrait;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Configure Doctrine related caches.
@@ -26,9 +28,17 @@ class DoctrineCacheCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         if ($this->isRedisEnabledForDoctrine($container)) {
-            $abstractCacheDef = $container->getDefinition(self::DOCTRINE_CACHE_SERVICE);
-            $memoryCacheDef = $container->getDefinition('oro.cache.adapter.array');
-            $chainCacheDef = new Definition(ChainAdapter::class, [$memoryCacheDef, $abstractCacheDef]);
+            $abstractCacheDef = new Definition(
+                RedisAdapter::class,
+                [new Reference(self::SNC_REDIS_DOCTRINE_SERVICE_ID)]
+            );
+            $chainCacheDef = new Definition(
+                ChainAdapter::class,
+                [
+                    new Reference('oro.cache.adapter.array'),
+                    new Reference(self::SNC_REDIS_DOCTRINE_SERVICE_ID)
+                ]
+            );
             $chainCacheDef->setAbstract(true);
             $container->setDefinition(
                 self::DOCTRINE_CACHE_SERVICE,
