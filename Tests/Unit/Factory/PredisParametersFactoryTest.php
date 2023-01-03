@@ -14,13 +14,9 @@ class PredisParametersFactoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param string $dsn
-     * @param array  $options
-     * @param array  $expectedParameters
-     *
      * @dataProvider createDp
      */
-    public function testCreate($dsn, $options, $expectedParameters)
+    public function testCreate(string $dsn, array $options, array $expectedParameters)
     {
         $parameters = PredisParametersFactory::create($options, Parameters::class, $dsn);
 
@@ -36,8 +32,6 @@ class PredisParametersFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     *
-     * @return array[]
      */
     public function createDp(): array
     {

@@ -9,8 +9,7 @@ use Oro\Bundle\RedisConfigBundle\Service\SetupFactory;
 
 class SetupFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    /** @var SetupFactory */
-    private $factory;
+    private SetupFactory $factory;
 
     protected function setUp(): void
     {
@@ -23,10 +22,8 @@ class SetupFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider loadCacheParameterDataProvider
-     * @param string $setupType
-     * @param $expected
      */
-    public function testFactory($setupType, $expected)
+    public function testFactory(string $setupType, string $expected)
     {
         $actualSetup = $this->factory->factory($setupType);
 
@@ -46,10 +43,7 @@ class SetupFactoryTest extends \PHPUnit\Framework\TestCase
         $this->factory->factory($setupType);
     }
 
-    /**
-     * @return array
-     */
-    public function loadCacheParameterDataProvider()
+    public function loadCacheParameterDataProvider(): array
     {
         return [
             [
