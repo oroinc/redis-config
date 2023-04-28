@@ -3,24 +3,16 @@
 namespace Oro\Bundle\RedisConfigBundle\Service\Setup;
 
 /**
- * {@inheritdoc}
+ * Configuration for sentinel setup
  */
 class SentinelSetup extends AbstractSetup
 {
-    /** setup type */
-    const TYPE = 'sentinel';
-    /** sentinel master name */
-    const REDIS_SENTINEL_MASTER_NAME_PARAM = 'redis_%s_sentinel_master_name';
+    public const TYPE = 'sentinel';
+    private const REDIS_SENTINEL_MASTER_NAME_PARAM = 'redis_%s_sentinel_master_name';
 
-    /**
-     * @param array  $config
-     * @param string $redisType
-     *
-     * @return array
-     */
-    public function getConfig(array $config, string $redisType)
+    public function getConfig(array $config, string $redisType): array
     {
-        $this->validate($config);
+        $this->validate($redisType);
 
         $redisSentinelMasterName = $this->container->getParameter(
             sprintf(self::REDIS_SENTINEL_MASTER_NAME_PARAM, $redisType)
@@ -52,32 +44,30 @@ class SentinelSetup extends AbstractSetup
     }
 
     /**
-     * @param array $config
+     * @param string $redisType
      *
      * @throws \InvalidArgumentException
      */
-    protected function validate($config)
+    protected function validate($redisType): void
     {
-        foreach (array_keys($config) as $configKey) {
-            $redisSentinelMasterNameParam = sprintf(self::REDIS_SENTINEL_MASTER_NAME_PARAM, $configKey);
-            $redisSentinelMasterName = $this->container->getParameter($redisSentinelMasterNameParam);
-            if ((null == $redisSentinelMasterName) || empty($redisSentinelMasterName)) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        'Parameter %s has been missed',
-                        $redisSentinelMasterNameParam
-                    )
-                );
-            }
-            $dsnParameters = $this->container->getParameter(sprintf('redis_dsn_%s', $configKey));
-            if (!is_array($dsnParameters) || count($dsnParameters) < 2) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        'Parameter %s has invalid value. It must contain at least 2 sentinel server addresses',
-                        'redis_dsn_' . $configKey
-                    )
-                );
-            }
+        $redisSentinelMasterNameParam = sprintf(self::REDIS_SENTINEL_MASTER_NAME_PARAM, $redisType);
+        $redisSentinelMasterName = $this->container->getParameter($redisSentinelMasterNameParam);
+        if (empty($redisSentinelMasterName)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Parameter %s has been missed',
+                    $redisSentinelMasterNameParam
+                )
+            );
+        }
+        $dsnParameters = $this->container->getParameter(sprintf('redis_dsn_%s', $redisType));
+        if (!is_array($dsnParameters) || count($dsnParameters) < 2) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Parameter %s has invalid value. It must contain at least 2 sentinel server addresses',
+                    'redis_dsn_' . $redisType
+                )
+            );
         }
     }
 }

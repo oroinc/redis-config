@@ -67,13 +67,13 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider incorrectConfigDataProvider
      */
-    public function testIncorrectConfig(string $configAlias, string $dsn): void
+    public function testIncorrectConfig(string $configAlias, string $dsn, $redisType): void
     {
         $input = ['cache' => ['dsn' => $dsn]];
 
         $container = new ContainerBuilder();
-        $container->setParameter('redis_dsn_cache', $dsn);
-        $container->setParameter('redis_cache_sentinel_master_name', 'mymaster');
+        $container->setParameter(sprintf('redis_dsn_%s', $redisType), $dsn);
+        $container->setParameter(sprintf('redis_%s_sentinel_master_name', $redisType), 'mymaster');
 
         $redisSetup = new Setup\SentinelSetup();
         $redisSetup->setContainer($container);
@@ -88,11 +88,23 @@ class SentinelSetupTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 'cache',
-                'redis://127.0.0.1:6379/0'
+                'redis://127.0.0.1:6379/0',
+                'cache',
             ],
             [
                 'cache',
-                'redis://127.0.0.1:6379/0'
+                'redis://127.0.0.1:6379/0',
+                'cache',
+            ],
+            [
+                'cache',
+                'http://127.0.0.1:6379/0',
+                'invalid_redis_type'
+            ],
+            [
+                'invalid_config_key',
+                'http://127.0.0.1:6379/0',
+                'cache'
             ]
         ];
     }
