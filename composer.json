@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {"Oro\\Bundle\\RedisConfigBundle\\": ""},
-        "exclude-from-classmap": ["/Tests/"]
+        "exclude-from-classmap": ["**/Tests/"]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
